@@ -1,0 +1,406 @@
+##############################################################
+# Fragment réutilisable pour les images ACF
+# IMPORTANT : un champ image simple ACF (return_format: array)
+# est exposé par WPGraphQL for ACF comme une "Edge" de connexion,
+# pas directement comme MediaItem. Il faut donc passer par `node`.
+##############################################################
+fragment AcfImageFields on MediaItem {
+    id
+    srcSet
+    sourceUrl
+    altText
+    caption
+    title
+    mediaDetails {
+        height
+        width
+    }
+}
+
+##############################################################
+# Fragment "Contenu" de la page d'accueil (front_page)
+##############################################################
+fragment HomeContentFields on HomeContent {
+    hero {
+        reinsurance
+        title
+        richText
+        button
+        richText2
+    }
+    texts {
+        text
+    }
+    texts2 {
+        text
+    }
+    process {
+        title
+        textarea
+        column1 {
+            title
+            textarea
+            image {
+                node {
+                    ...AcfImageFields
+                }
+            }
+        }
+        column2 {
+            title
+            textarea
+            image {
+                node {
+                    ...AcfImageFields
+                }
+            }
+        }
+    }
+    steps {
+        title
+        textarea
+        button
+        item {
+            stepTitle
+            title
+            textarea
+            image {
+                node {
+                    ...AcfImageFields
+                }
+            }
+        }
+    }
+    realizations {
+        reinsurance
+        title
+        textarea
+        button
+        items {
+            nodes {
+                ... on Realization {
+                    id
+                    title
+                    uri
+                    content
+
+                    featuredImage {
+                        node {
+                            id
+                            sourceUrl
+                            altText
+                        }
+                    }
+
+                    realizationsToTag {
+                        nodes {
+                            id
+                            name
+                            slug
+                            uri
+                        }
+                    }
+
+                    realizationContent {
+                        ...RealizationContentFields
+                    }
+                }
+            }
+        }
+    }
+    offers {
+        title
+        textarea
+        item {
+            title
+            textarea
+            estimateText
+            delivery
+            button
+            listText
+            list
+        }
+    }
+    faq {
+        title
+        textarea
+        items {
+            nodes {
+                ... on Faq {
+                    id
+                    title
+                    uri
+                }
+            }
+        }
+    }
+}
+
+##############################################################
+# Fragment "Contenu" du CPT realizations (group_6a53b4468fdd1)
+##############################################################
+fragment RealizationContentFields on RealizationContent {
+    logo {
+        node {
+            ...AcfImageFields
+        }
+    }
+    link
+}
+
+##############################################################
+# Requête principale
+##############################################################
+query GetNodeByURI($uri: String!, $categoryName: String, $first: Int, $last: Int, $after: String, $before: String) {
+    nodeByUri(uri: $uri) {
+        __typename
+        isContentNode
+        isTermNode
+        ... on Post {
+            id
+            title
+            date
+            uri
+            excerpt
+            slug
+            categories {
+                nodes {
+                    name
+                    uri
+                }
+            }
+            featuredImage {
+                node {
+                    srcSet
+                    sourceUrl
+                    altText
+                    caption
+                    title
+                    mediaDetails {
+                        height
+                        width
+                    }
+                }
+            }
+            seo {
+                ...PostTypeSEOMetadata
+            }
+            editorBlocks(flat: false) {
+                ...WPBlocks
+                ... on CoreMediaText {
+                    __typename
+                    clientId
+                    parentClientId
+                    attributes {
+                        mediaAlt
+                        mediaUrl
+                    }
+                    innerBlocks {
+                        ...WPBlocks
+                    }
+                }
+            }
+            tags(where: { orderby: COUNT, hideEmpty: true }, first: 100) {
+                __typename
+                edges {
+                    node {
+                        ... on Tag {
+                            __typename
+                            id
+                            name
+                            slug
+                            uri
+                        }
+                    }
+                }
+            }
+        }
+        ... on Page {
+            id
+            title
+            uri
+            slug
+            date
+            featuredImage {
+                node {
+                    srcSet
+                    sourceUrl
+                    altText
+                    caption
+                    title
+                    mediaDetails {
+                        height
+                        width
+                    }
+                }
+            }
+            seo {
+                ...PostTypeSEOMetadata
+            }
+            editorBlocks(flat: false) {
+                ...WPBlocks
+                ... on CoreMediaText {
+                    __typename
+                    clientId
+                    parentClientId
+                    attributes {
+                        mediaAlt
+                        mediaUrl
+                    }
+                    innerBlocks {
+                        ...WPBlocks
+                    }
+                }
+            }
+            homeContent {
+                ...HomeContentFields
+            }
+        }
+        ... on Category {
+            id
+            name
+            posts(where: { status: PUBLISH, orderby: [{ field: DATE, order: DESC }] }, first: $first, after: $after, last: $last, before: $before) {
+                edges {
+                    cursor
+                    node {
+                        ... on Post {
+                            date
+                            title
+                            excerpt
+                            uri
+                            slug
+                            categories {
+                                nodes {
+                                    name
+                                    uri
+                                }
+                            }
+                            featuredImage {
+                                node {
+                                    mediaDetails {
+                                        height
+                                        width
+                                    }
+                                    srcSet
+                                    sourceUrl
+                                    altText
+                                    caption
+                                    title
+                                }
+                            }
+                        }
+                    }
+                }
+                pageInfo {
+                    hasNextPage
+                    hasPreviousPage
+                    startCursor
+                    endCursor
+                }
+            }
+            seo {
+                ...TaxonomySEOMetadata
+            }
+        }
+        ... on Tag {
+            id
+            name
+            posts(where: { status: PUBLISH, orderby: [{ field: DATE, order: DESC }] }, first: 200) {
+                edges {
+                    cursor
+                    node {
+                        ... on Post {
+                            date
+                            title
+                            excerpt
+                            uri
+                            slug
+                            categories {
+                                nodes {
+                                    name
+                                    uri
+                                }
+                            }
+                            featuredImage {
+                                node {
+                                    srcSet
+                                    sourceUrl
+                                    altText
+                                    caption
+                                    title
+                                    mediaDetails {
+                                        height
+                                        width
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                pageInfo {
+                    hasNextPage
+                    hasPreviousPage
+                    startCursor
+                    endCursor
+                }
+            }
+            seo {
+                ...TaxonomySEOMetadata
+            }
+        }
+    }
+    posts(
+        where: { status: PUBLISH, orderby: [{ field: DATE, order: DESC }], categoryName: $categoryName }
+        first: $first
+        last: $last
+        after: $after
+        before: $before
+    ) {
+        __typename
+        edges {
+            cursor
+            node {
+                __typename
+                ... on Post {
+                    id
+                    title
+                    date
+                    uri
+                    excerpt
+                    slug
+                    categories(first: 5) {
+                        edges {
+                            node {
+                                ... on Category {
+                                    __typename
+                                    id
+                                    name
+                                    slug
+                                }
+                            }
+                        }
+                    }
+                    tags {
+                        edges {
+                            node {
+                                ... on Tag {
+                                    id
+                                    name
+                                    slug
+                                    uri
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        pageInfo {
+            hasNextPage
+            hasPreviousPage
+            startCursor
+            endCursor
+        }
+    }
+    ...GeneralSettings
+}

@@ -1,0 +1,538 @@
+---
+import { getSvgDimensions } from '@/utils/svg-dimensions';
+import Button from '@/components/Button.astro';
+import SvgImage from '@/components/SvgImage.astro';
+import Stars from '@/assets/images/icon-stars.svg';
+import SliderArrowUp from '@/assets/images/slider-arrow-up.svg';
+import SliderArrowDown from '@/assets/images/slider-arrow-down.svg';
+
+interface RealizationItem {
+  uri: string;
+  title?: string;
+  content?: string;
+
+  featuredImage?: {
+    node?: {
+      sourceUrl: string;
+      altText?: string;
+      mediaDetails?: {
+        width?: number;
+        height?: number;
+      };
+    };
+  };
+
+  realizationsToTag?: {
+    nodes?: {
+      id: string;
+      name: string;
+      slug: string;
+      uri?: string;
+    }[];
+  };
+
+  realizationContent?: {
+    logo?: {
+      node?: {
+        sourceUrl: string;
+        mediaDetails?: {
+          width?: number;
+          height?: number;
+        };
+      };
+    };
+    link?: string;
+    description?: string;
+  };
+}
+
+interface Props {
+  realizations?: {
+    reinsurance?: string;
+    title?: string;
+    textarea?: string;
+    button?: string;
+    items?: {
+      nodes?: RealizationItem[];
+    };
+  } | null;
+
+  configurationDuThMe?: {
+    themeOptions?: {
+      calUrl?: string;
+      whatsappUrl?: string;
+    };
+  };
+}
+
+const { realizations, configurationDuThMe } = Astro.props;
+
+const calUrl = configurationDuThMe?.themeOptions?.calUrl;
+
+// Précalcule les dimensions de chaque image (SVG ou raster) avant le rendu
+const itemsWithDimensions = await Promise.all(
+  (realizations?.items?.nodes ?? []).map(async (item) => {
+    const featuredImageUrl = item.featuredImage?.node?.sourceUrl;
+    const logoUrl = item.realizationContent?.logo?.node?.sourceUrl;
+
+    const featuredImageIsSvg = featuredImageUrl
+      ?.toLowerCase()
+      .endsWith('.svg');
+
+    const logoIsSvg = logoUrl
+      ?.toLowerCase()
+      .endsWith('.svg');
+
+    const [featuredImageDimensions, logoDimensions] = await Promise.all([
+      featuredImageIsSvg && featuredImageUrl
+        ? getSvgDimensions(featuredImageUrl)
+        : {
+            width: item.featuredImage?.node?.mediaDetails?.width,
+            height: item.featuredImage?.node?.mediaDetails?.height,
+          },
+
+      logoIsSvg && logoUrl
+        ? getSvgDimensions(logoUrl)
+        : {
+            width: item.realizationContent?.logo?.node?.mediaDetails?.width,
+            height: item.realizationContent?.logo?.node?.mediaDetails?.height,
+          },
+    ]);
+
+    return {
+      ...item,
+      dimensions: {
+        featuredImage: featuredImageDimensions,
+        logo: logoDimensions,
+      },
+    };
+  })
+);
+---
+
+{realizations && (
+  <section
+    id="projets"
+    class="realizations py-section"
+    data-bg-dark
+  >
+    <div class="container-fluid px-4">
+      <div
+        class="
+          relative z-10
+          overflow-hidden
+          rounded-2xl
+          bg-black
+          pt-16
+          pb-20
+        "
+      >
+        <!-- HEADER -->
+        <div class="relative z-10 mx-auto max-w-190 text-center">
+          {realizations.reinsurance && (
+            <p class="flex items-center justify-center gap-2 text-xl text-gray-ter">
+              <SvgImage src={Stars} alt="Stars" width="122" height="30" />
+              <span>{realizations.reinsurance}</span>
+            </p>
+          )}
+
+          {realizations.title && (
+            <h2
+              set:html={realizations.title}
+              class="
+                mx-auto mt-7
+                max-w-260
+                text-center
+                text-[clamp(2rem,3vw,3rem)]
+                font-medium
+                leading-tight
+                tracking-[-0.04em]
+                text-white
+
+                [&_strong]:relative
+                [&_strong]:z-0
+                [&_strong]:isolate
+                [&_strong]:inline-block
+                [&_strong]:font-medium
+                [&_strong]:text-green-bis
+
+                [&_strong]:before:absolute
+                [&_strong]:before:-left-2
+                [&_strong]:before:-z-10
+                [&_strong]:before:top-1/2
+                [&_strong]:before:h-[calc(100%+8px)]
+                [&_strong]:before:w-[calc(100%+20px)]
+                [&_strong]:before:-translate-y-1/2
+                [&_strong]:before:rotate-1
+                [&_strong]:before:rounded-md
+                [&_strong]:before:bg-green-dark
+              "
+              data-anim-char
+            />
+          )}
+
+          {realizations.textarea && (
+            <p class="mt-8 text-lg text-gray-ter">
+              {realizations.textarea}
+            </p>
+          )}
+
+          {realizations.button && (
+            <Button
+              href={calUrl}
+              variant="tertiary"
+              targetBlank
+              isIcon
+              class:list={['mt-12']}
+            >
+              {realizations.button}
+            </Button>
+          )}
+        </div>
+
+        <!-- SLIDER -->
+        <div
+          class="
+            relative mx-auto mt-20
+            h-150
+            overflow-hidden
+            lg:mt-16.25
+          "
+        >
+          <!-- Dégradés qui fondent les slides voisines dans le noir -->
+          <div class="pointer-events-none absolute inset-x-0 top-0 z-10 h-10 bg-linear-to-b from-black to-transparent"></div>
+          <div class="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-10 bg-linear-to-t from-black to-transparent"></div>
+
+          <!-- Swiper -->
+          <div class="swiper realizations-swiper">
+            <div class="swiper-wrapper">
+              {itemsWithDimensions.map((item) => (
+                <div class="swiper-slide">
+                  <div
+                    class="
+                      realization-card
+                      grid!
+                      grid-cols-1
+                      items-center
+                      gap-10
+                      lg:grid-cols-2
+                      lg:gap-0
+                      w-full
+                    "
+                  >
+                    <!-- COLONNE IMAGE -->
+                    <div class="relative">
+                      <div
+                        class="
+                          realization-card-img relative mx-auto
+                          w-full
+                          transition-[transform,opacity,filter]
+                          duration-700
+                          ease-snappy
+                          will-change-transform
+                          max-w-128.25
+                          h-86.25
+                          overflow-hidden
+                          rounded-xl
+                          bg-[#111111]
+                        "
+                      >
+  <img
+  src={item.featuredImage?.node?.sourceUrl}
+  alt={item.featuredImage?.node?.altText ?? item.title ?? ''}
+  width={item.dimensions.featuredImage?.width}
+  height={item.dimensions.featuredImage?.height}
+  class="h-full w-full object-cover object-center"
+  loading="lazy"
+/>
+                      </div>
+                    </div>
+
+                    <!-- INFORMATIONS -->
+                    <div class="realization-card-content mx-auto w-full max-w-110">
+                      {item.realizationContent?.logo?.node && (
+                        <img
+  src={item.realizationContent.logo.node.sourceUrl}
+  alt={item.title ?? ''}
+  width={item.dimensions.logo?.width}
+  height={item.dimensions.logo?.height}
+  class="
+    mb-7
+    max-h-12.5
+    max-w-45
+    object-contain
+    object-left
+    brightness-0
+    invert
+  "
+/>
+                      )}
+
+                      {item.realizationsToTag?.nodes?.length && (
+  <div class="flex flex-wrap gap-3">
+    {item.realizationsToTag.nodes.map((tag) => (
+      <span
+        class="
+          rounded-full
+          border
+          border-[#3E8E72]
+          bg-[#0B211B]
+          px-4
+          py-2
+          text-[11px]
+          font-medium
+          text-[#63EBA5]
+        "
+      >
+        {tag.name}
+      </span>
+    ))}
+  </div>
+)}
+
+                      {item.content && (
+  <div
+    class="mt-6 text-gray-ter"
+    set:html={item.content}
+  />
+)}
+
+                      {item.realizationContent?.link && (
+                        <Button
+                          href={item.realizationContent.link}
+                          variant="tertiary"
+                          ariaLabel={item.title}
+                          targetBlank
+                          class:list={['mt-12']}
+                        >
+                          Voir le site en ligne
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <!-- NAVIGATION -->
+          <div
+            class="
+              absolute
+              left-1/2
+              top-1/2
+              z-20
+              hidden
+              -translate-x-1/2
+              -translate-y-1/2
+              lg:block
+            "
+          >
+            <div class="flex rounded-full bg-gray-bis p-1">
+              <div class="flex flex-col gap-y-1">
+                <button
+                  type="button"
+                  class="realizations-prev [&.swiper-button-disabled]:opacity-20 transition-colors duration-500 ease-snappy rounded-full border-2 border-transparent hover:border-green-bis"
+                  aria-label="Projet précédent"
+                >
+                  <SvgImage src={SliderArrowUp} alt="Slider Arrow Up" width="50" height="50" />
+                </button>
+
+                <button
+                  type="button"
+                  class="realizations-next [&.swiper-button-disabled]:opacity-20 transition-colors duration-500 ease-snappy rounded-full border-2 border-transparent hover:border-green-bis"
+                  aria-label="Projet suivant"
+                >
+                  <SvgImage src={SliderArrowDown} alt="Slider Arrow Down" width="50" height="50" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  @reference "../../styles/global.css";
+
+  .realizations-swiper {
+    @apply h-full w-full;
+  }
+
+  .realizations-swiper .swiper-wrapper {
+    @apply h-full;
+  }
+
+  .realizations-swiper .swiper-slide {
+    @apply flex h-full items-center pointer-events-none;
+  }
+
+  .realizations-swiper .swiper-slide-active {
+    @apply pointer-events-auto;
+  }
+
+  .realizations-swiper .swiper-slide .realization-card-img {
+    @apply transition-[max-width] duration-1000 ease-snappy;
+  }
+
+  .realizations-swiper .swiper-slide .realization-card-content {
+    @apply transition-opacity duration-1000 ease-snappy;
+  }
+
+  .realizations-swiper .swiper-slide-prev .realization-card-img,
+  .realizations-swiper .swiper-slide-next .realization-card-img {
+    @apply max-w-100;
+  }
+
+  .realizations-swiper .swiper-slide-prev .realization-card-content,
+  .realizations-swiper .swiper-slide-next .realization-card-content {
+    @apply opacity-0;
+  }
+
+  .realizations-swiper .swiper-slide-active .realization-card-img {
+    @apply max-w-128.25;
+  }
+
+  .realizations-swiper .swiper-slide-active .realization-card-content {
+    @apply opacity-100;
+  }
+</style>
+
+<script>
+  function initRealizationsSlider(container: HTMLElement) {
+  const slider = container.querySelector<HTMLElement>('.realizations-swiper');
+  if (!slider || slider.dataset.swiperInitialized === 'true') return;
+
+  const wrapper = slider.querySelector<HTMLElement>('.swiper-wrapper');
+  const prev = container.querySelector<HTMLElement>('.realizations-prev');
+  const next = container.querySelector<HTMLElement>('.realizations-next');
+
+  if (!wrapper || !prev || !next) return;
+
+  // On récupère les slides originales
+  const originalSlides = Array.from(
+    wrapper.querySelectorAll<HTMLElement>('.swiper-slide')
+  );
+
+  if (originalSlides.length <= 1) return;
+
+  // Nombre de clones nécessaires
+  // 2 ou 3 fonctionne généralement bien avec centeredSlides + slidesPerView: 1.5
+  const cloneCount = Math.min(2, originalSlides.length);
+
+  // Clones de fin -> ajoutés au début
+  const prependClones = originalSlides
+    .slice(-cloneCount)
+    .map((slide) => {
+      const clone = slide.cloneNode(true) as HTMLElement;
+      clone.dataset.clone = 'true';
+      return clone;
+    });
+
+  // Clones de début -> ajoutés à la fin
+  const appendClones = originalSlides
+    .slice(0, cloneCount)
+    .map((slide) => {
+      const clone = slide.cloneNode(true) as HTMLElement;
+      clone.dataset.clone = 'true';
+      return clone;
+    });
+
+  // On ajoute les clones
+  prependClones.reverse().forEach((clone) => {
+    wrapper.prepend(clone);
+  });
+
+  appendClones.forEach((clone) => {
+    wrapper.append(clone);
+  });
+
+  Promise.all([
+    import('swiper'),
+    import('swiper/modules'),
+  ]).then(([{ default: Swiper }, { Navigation }]) => {
+    const swiper = new Swiper(slider, {
+      modules: [Navigation],
+
+      direction: 'vertical',
+
+      slidesPerView: 1.5,
+      centeredSlides: true,
+
+      speed: 1250,
+      allowTouchMove: true,
+
+      // Pas de loop
+      loop: false,
+
+      navigation: {
+        prevEl: prev,
+        nextEl: next,
+      },
+
+      // On commence après les clones du début
+      initialSlide: cloneCount,
+
+      on: {
+        slideChangeTransitionEnd(swiper) {
+          const realSlidesCount = originalSlides.length;
+          const currentIndex = swiper.activeIndex;
+
+          // On est arrivé dans les clones de fin
+          if (currentIndex >= realSlidesCount + cloneCount) {
+            swiper.slideTo(
+              currentIndex - realSlidesCount,
+              0,
+              false
+            );
+          }
+
+          // On est arrivé dans les clones de début
+          else if (currentIndex < cloneCount) {
+            swiper.slideTo(
+              currentIndex + realSlidesCount,
+              0,
+              false
+            );
+          }
+        },
+      },
+    });
+
+    slider.dataset.swiperInitialized = 'true';
+
+    (
+      slider as HTMLElement & {
+        swiper?: Swiper;
+      }
+    ).swiper = swiper;
+  });
+}
+
+function setupObserver() {
+  const sections = document.querySelectorAll<HTMLElement>('.realizations');
+
+  sections.forEach((section) => {
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            initRealizationsSlider(section);
+            obs.disconnect();
+          }
+        });
+      },
+      {
+        rootMargin: '0px',
+      }
+    );
+
+    observer.observe(section);
+  });
+}
+
+setupObserver();
+document.addEventListener('astro:page-load', setupObserver);
+</script>

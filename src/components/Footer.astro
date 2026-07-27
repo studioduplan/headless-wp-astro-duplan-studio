@@ -1,0 +1,86 @@
+---
+import siteConfig from "@/data/site-config";
+import ClassicNav from '@/components/ClassicNav.astro';
+import type { Menu } from '@/utils/types';
+import LogoSvg from '@/assets/icons/Logo.astro';
+import type { PostTypeSeo, TaxonomySeo, CoreImage } from '@/gql/sdk';
+
+export type Props = {
+  primaryMenu?: Menu | null,
+  footerMenu?: Menu | null,
+  siteUrl?: string,
+  seo: PostTypeSeo | TaxonomySeo,
+  seoTitle: string;
+};
+
+const {
+  primaryMenu,
+  footerMenu,
+  seoTitle,
+  siteUrl = import.meta.env.SITE ?? "/",
+  ...head
+} = Astro.props;
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="site-footer overflow-hidden bg-black">
+    <div class="site-footer__row">
+        <div class="container">
+            <a href={siteUrl} class="site-footer__logo" aria-label="Logo Duplan Studio">
+                <LogoSvg width={259} height={40} />
+            </a>
+            <div class="site-footer__nav">
+                <ClassicNav menu={primaryMenu} />
+            </div>
+        </div>
+    </div>
+    <div class="site-footer__row">
+        <div class="container">
+            <div class="site-footer__copyright text-lg">
+                <span>&copy;</span> {currentYear} {siteConfig.title}. Tous droits réservés
+            </div>
+            <div class="site-footer__nav">
+                <ClassicNav menu={footerMenu} />
+            </div>
+        </div>
+    </div>
+    <LogoSvg class={"site-footer__deco"} width={"110%"} height={300} />
+</footer>
+
+<style>
+    @reference "../styles/global.css";
+
+    .site-footer__row > .container {
+        @apply flex justify-between items-center;
+    }
+
+    .site-footer__row:first-of-type {
+        @apply py-12 border-b border-white;
+    }
+
+    .site-footer__row:last-of-type {
+        @apply py-8;
+    }
+
+    .site-footer__copyright {
+        @apply text-white;
+    }
+
+    .site-footer__copyright > span {
+        @apply relative -top-1 text-xs;
+    }
+
+    .site-footer{
+        @apply relative;
+    }
+
+    .site-footer__deco {
+        @apply relative -mt-12 -bottom-27.5 left-1/2 -translate-x-1/2;
+    }
+
+    .site-footer__logo :global(path),
+    .site-footer__deco :global(path) {
+        @apply fill-white;
+    }
+</style>

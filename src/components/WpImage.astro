@@ -1,0 +1,31 @@
+---
+import { Image } from "astro:assets";
+
+const { src, sizes = "100vw", priority = false } = Astro.props;
+
+const MAX_WIDTH = 1920;
+
+const sourceUrl = src?.sourceUrl;
+const naturalWidth = src?.mediaDetails?.width;
+const naturalHeight = src?.mediaDetails?.height;
+
+const hasDimensions = Boolean(naturalWidth && naturalHeight);
+
+const width = hasDimensions ? Math.min(naturalWidth, MAX_WIDTH) : undefined;
+const height = hasDimensions
+  ? Math.round(width * (naturalHeight / naturalWidth))
+  : undefined;
+---
+
+{sourceUrl && (
+  <Image
+    src={sourceUrl}
+    alt={src?.altText || ""}
+    {...(hasDimensions ? { width, height } : { inferSize: true })}
+    format="avif"
+    quality={80}
+    sizes={sizes}
+    loading={priority ? "eager" : "lazy"}
+    decoding="async"
+  />
+)}

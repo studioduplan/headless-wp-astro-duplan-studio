@@ -1,0 +1,30 @@
+---
+
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getNodeByUri } from '@/lib/api';
+import { isGraphType } from '@/utils/types';
+
+const nodeByUri = await getNodeByUri({
+uri: Astro.url.pathname,
+});
+
+const nodeData = nodeByUri?.nodeByUri;
+const isPage = isGraphType(nodeData, 'Page');
+const pageData = isPage ? nodeData : null;
+
+const seo = nodeData?.seo;
+
+const primaryMenuNode = nodeByUri?.primaryMenu?.nodes?.[0];
+const footerMenuNode = nodeByUri?.footerMenu?.nodes?.[0];
+---
+
+<BaseLayout
+    title={nodeByUri?.generalSettings?.title ?? ''}
+    description={nodeByUri?.generalSettings?.description ?? ''}
+    primaryMenu={primaryMenuNode && isGraphType(primaryMenuNode, 'Menu')? primaryMenuNode: null}
+    footerMenu={footerMenuNode && isGraphType(footerMenuNode, 'Menu')? footerMenuNode: null}
+    seo={seo}
+>
+
+{pageData?.content && ( <main> <article set:html={pageData.content} /> </main>
+)} </BaseLayout>

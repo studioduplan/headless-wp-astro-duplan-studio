@@ -1,0 +1,50 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getNodeByUri } from '@/lib/api';
+import { isGraphType } from '@/utils/types';
+
+import HeroSection from '@/components/blocks/HeroSection.astro';
+import TextsRow from '@/components/blocks/TextsRow.astro';
+import ProcessSection from '@/components/blocks/ProcessSection.astro';
+import StepsSection from '@/components/blocks/StepsSection.astro';
+import RealizationsSection from '@/components/blocks/RealizationsSection.astro';
+import OffersSection from '@/components/blocks/OffersSection.astro';
+import FaqSection from '@/components/blocks/FaqSection.astro';
+
+import SvgImage from '@/components/SvgImage.astro';
+import Line from '@/assets/images/icon-line.svg';
+
+const nodeByUri = await getNodeByUri({uri: Astro.url.pathname});
+const nodeData = nodeByUri?.nodeByUri;
+const isPage = isGraphType(nodeData, 'Page');
+const pageData = isPage ? nodeData : null;
+const seo = nodeData?.seo;
+const content = pageData?.homeContent;
+const primaryMenuNode = nodeByUri?.primaryMenu?.nodes?.[0];
+const footerMenuNode = nodeByUri?.footerMenu?.nodes?.[0];
+---
+
+<BaseLayout
+  title={nodeByUri?.generalSettings?.title ?? ''}
+  description={nodeByUri?.generalSettings?.description ?? ''}
+  primaryMenu={primaryMenuNode && isGraphType(primaryMenuNode, 'Menu') ? primaryMenuNode : null}
+  footerMenu={footerMenuNode && isGraphType(footerMenuNode, 'Menu') ? footerMenuNode : null}
+  seo={seo}
+  configurationDuThMe={nodeByUri?.configurationDuThMe}
+>
+  {content && (
+    <>
+      <HeroSection hero={content.hero} configurationDuThMe={nodeByUri?.configurationDuThMe} />
+      <TextsRow texts={content.texts}  direction="left" speed={50} />
+      {Line && (
+        <SvgImage src={Line} alt="Line" width="100%" height="42" class:list={"relative top-2"} />
+      )}
+      <TextsRow texts={content.texts2} direction="right" speed={50} class:list={"mb-[100px]"} />
+      <ProcessSection process={content.process} />
+      <StepsSection steps={content.steps} configurationDuThMe={nodeByUri?.configurationDuThMe} />
+      <RealizationsSection realizations={content.realizations} configurationDuThMe={nodeByUri?.configurationDuThMe} />
+      <OffersSection offers={content.offers} />
+      <FaqSection faq={content.faq} />
+    </>
+  )}
+</BaseLayout>

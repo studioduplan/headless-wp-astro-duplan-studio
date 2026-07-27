@@ -1,0 +1,149 @@
+---
+interface TextItem {
+  text: string;
+  color?: "black" | "green";
+}
+
+interface Props {
+  texts: TextItem[];
+  direction?: "left" | "right";
+  speed?: number;
+  class?: string;
+}
+
+const {
+  texts = [],
+  direction = "left",
+  speed = 50,
+  class: className = "",
+} = Astro.props;
+---
+
+{texts.length > 0 && (
+  <section
+    class:list={[
+      "marquee w-full overflow-hidden",
+      className,
+    ]}
+    data-direction={direction}
+    data-speed={speed}
+  >
+    <div class="marquee-track flex w-max">
+      <div class="marquee-content mr-8 flex shrink-0 gap-x-8">
+        {texts.map((item, index) => (
+          <div class="flex w-max shrink-0 items-center justify-center whitespace-nowrap">
+            <p
+              class:list={[
+                "m-0 shrink-0 text-[clamp(5rem,10vw,10rem)] font-semibold leading-none tracking-[-2%]",
+                index % 2 === 1 ? "text-green-medium" : "text-black",
+              ]}
+            >
+              {item.text}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <!-- Clone pour la boucle infinie -->
+      <div
+        class="marquee-content flex shrink-0 gap-x-8"
+        aria-hidden="true"
+      >
+        {texts.map((item, index) => (
+          <div class="flex w-max shrink-0 items-center justify-center whitespace-nowrap">
+            <p
+              class:list={[
+                "m-0 shrink-0 text-[clamp(5rem,10vw,10rem)] font-semibold leading-none tracking-[-2%]",
+                index % 2 === 1 ? "text-green-medium" : "text-black",
+              ]}
+            >
+              {item.text}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<script>
+  import { loadGsap, onIdle } from '@/utils/gsap';
+
+  const init = async () => {
+     const { gsap } = await loadGsap();
+    
+      const marquees = document.querySelectorAll<HTMLElement>(".marquee");
+
+  marquees.forEach((marquee) => {
+    const track = marquee.querySelector<HTMLElement>(".marquee-track");
+    const content = marquee.querySelector<HTMLElement>(".marquee-content");
+
+    if (!track || !content) return;
+
+    const direction = marquee.dataset.direction === "right" ? 1 : -1;
+    const speed = Number(marquee.dataset.speed) || 50;
+
+    const getWidth = () => content.offsetWidth;
+
+    let animation = gsap.to(track, {
+      x: direction === 1 ? 0 : -getWidth(),
+      duration: getWidth() / speed,
+      ease: "none",
+      repeat: -1,
+      paused: true,
+    });
+
+    gsap.set(track, {
+      x: direction === 1 ? -getWidth() : 0,
+    });
+
+    const intersectionObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          animation.play();
+        } else {
+          animation.pause();
+        }
+      },
+      {
+        threshold: 0,
+      }
+    );
+
+    intersectionObserver.observe(marquee);
+
+    const resizeObserver = new ResizeObserver(() => {
+      const width = getWidth();
+
+      animation.kill();
+
+      gsap.set(track, {
+        x: direction === 1 ? -width : 0,
+      });
+
+      animation = gsap.to(track, {
+        x: direction === 1 ? 0 : -width,
+        duration: width / speed,
+        ease: "none",
+        repeat: -1,
+        paused: true,
+      });
+
+      const rect = marquee.getBoundingClientRect();
+
+      const isVisible =
+        rect.top < window.innerHeight &&
+        rect.bottom > 0;
+
+      if (isVisible) {
+        animation.play();
+      }
+    });
+
+    resizeObserver.observe(content);
+  });
+  };
+
+  onIdle(init);
+  document.addEventListener('astro:page-load', init);
+</script>

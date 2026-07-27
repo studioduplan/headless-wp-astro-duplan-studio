@@ -1,0 +1,44 @@
+@import 'tailwindcss';
+
+@theme {
+    /* Fonts */
+    --font-gsf: 'Google Sans Flex', sans-serif;
+
+    /* Colors */
+    --color-black-bis: #010e0a;
+    --color-green: #004131;
+    --color-green-medium: #368f6c;
+    --color-green-bis: #78faae;
+    --color-green-dark: #0e352b;
+    --color-gray: #f8fffb;
+    --color-gray-bis: #f7f8f9;
+    --color-gray-ter: #bebebe;
+
+    /* Breakpoints */
+    --breakpoint-laptop: 1281px;
+
+    /* Spacing */
+    --spacing-section: clamp(50px, 12vw, 100px);
+
+    /* Transitions */
+    --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-snappy: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+body {
+    @apply font-gsf text-black;
+}
+
+.container {
+    @apply mx-auto w-full;
+}
+
+a,
+button {
+    @apply outline-none cursor-pointer;
+}
+
+strong {
+    @apply font-semibold;
+}

@@ -1,0 +1,26 @@
+---
+import NavLink from './NavLink.astro';
+import type { Menu } from '@/utils/types'
+
+type Props = {
+  menu: Menu
+}
+
+const { menu, class: className } = Astro.props as Props
+const { menuItems } = menu ?? {}
+---
+
+<nav class={className}>
+        <ul class="menu flex gap-x-8">
+            {menuItems?.nodes.map((link) => (
+                <li class="py-1">
+                    <NavLink
+                        class="text-white text-lg hover:underline hover:underline-offset-4"
+                        href={link.uri}
+                    >
+                        {link.label}
+                    </NavLink>
+                </li>
+            ))}
+        </ul>
+</nav>

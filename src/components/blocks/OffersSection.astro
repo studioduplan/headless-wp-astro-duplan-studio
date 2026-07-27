@@ -1,0 +1,40 @@
+---
+interface OfferItem {
+  title?: string;
+  textarea?: string;
+  estimateText?: string;
+  delivery?: string;
+  list?: string;
+  button?: string;
+}
+
+interface Props {
+  offers?: {
+    title?: string;
+    textarea?: string;
+    item?: OfferItem[];
+  } | null;
+}
+
+const { offers } = Astro.props;
+---
+
+{offers && (
+  <section id="offres" class="offers py-section">
+    {offers.title && <h2 set:html={offers.title} />}
+    {offers.textarea && <p>{offers.textarea}</p>}
+
+    <div class="offer-cards">
+      {offers.item?.map((offer) => (
+        <div class="offer-card">
+          <h3>{offer.title}</h3>
+          <p>{offer.textarea}</p>
+          <span>{offer.estimateText}</span>
+          <span>{offer.delivery}</span>
+          {offer.list && <div set:html={offer.list} />}
+          {offer.button && <a href="#">{offer.button}</a>}
+        </div>
+      ))}
+    </div>
+  </section>
+)}

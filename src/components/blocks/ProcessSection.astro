@@ -1,0 +1,181 @@
+---
+import ProcessColumn from './ProcessColumn.astro';
+
+interface Props {
+  process?: {
+    title?: string;
+    textarea?: string;
+    column1?: any[];
+    column2?: any[];
+  } | null;
+}
+
+const { process } = Astro.props;
+---
+
+{process && (
+  <section id="processus" class="process py-section">
+    <div class="container">
+      {process.title && (
+        <h2
+          class="[&_strong]:font-medium
+            [&_strong]:relative
+            [&_strong]:z-0
+            [&_strong]:isolate
+            [&_strong]:inline-block
+            [&_strong]:text-green-bis
+
+            [&_strong]:before:absolute
+            [&_strong]:before:-z-10
+            [&_strong]:before:top-1/2
+            [&_strong]:before:-translate-y-1/2
+            [&_strong]:before:-left-[8px]
+            [&_strong]:before:w-[calc(100%+20px)]
+            [&_strong]:before:h-[calc(100%+8px)]
+            [&_strong]:before:rounded-md
+            [&_strong]:before:bg-green-dark
+
+            [&_strong:first-of-type::before]:mt-1
+            [&_strong:first-of-type::before]:-rotate-1
+            mx-auto max-w-[1040px] text-center text-[clamp(2rem,3vw,3rem)] font-medium leading-tight tracking-[-0.04em]"
+          set:html={process.title} data-anim-char
+        />
+      )}
+
+      {process.textarea && (
+        <div class="mx-auto mt-5 max-w-[850px] text-center text-[clamp(0.9rem,1.2vw,1.1rem)] font-normal leading-[1.5] tracking-[-0.02em] text-black/60">
+          {process.textarea}
+        </div>
+      )}
+
+      <div
+        id="process-columns"
+        class="mt-10 grid grid-cols-1 gap-4 lg:mt-12 lg:grid-cols-2 lg:gap-x-4 lg:gap-y-4"
+      >
+        <!-- Colonne gauche -->
+        <div
+          data-process-column="left"
+          class="flex flex-col gap-4 will-change-transform"
+        >
+          <ProcessColumn
+            items={process.column1}
+            startIndex={1}
+          />
+        </div>
+
+        <!-- Colonne droite décalée -->
+        <div
+          data-process-column="right"
+          class="flex flex-col gap-4 will-change-transform lg:pt-[155px]"
+        >
+          <ProcessColumn
+            items={process.column2}
+            startIndex={3}
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+)}
+
+<script>
+  import { loadGsap, onIdle } from '@/utils/gsap';
+
+  const init = async () => {
+     const { gsap } = await loadGsap();
+    
+     const section = document.querySelector('#processus');
+
+    if (!section) return;
+
+    const leftColumn = section.querySelector(
+      '[data-process-column="left"]'
+    );
+
+    const rightColumn = section.querySelector(
+      '[data-process-column="right"]'
+    );
+
+    if (!leftColumn || !rightColumn) return;
+
+    let timeline: gsap.core.Timeline | null = null;
+
+    const createAnimation = () => {
+      // Évite de créer plusieurs animations
+      if (timeline) return;
+
+      timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 1,
+        },
+      });
+
+      timeline
+        .fromTo(
+          leftColumn,
+          {
+            y: -30,
+          },
+          {
+            y: 60,
+            ease: 'none',
+          },
+          0
+        )
+        .fromTo(
+          rightColumn,
+          {
+            y: 30,
+          },
+          {
+            y: -60,
+            ease: 'none',
+          },
+          0
+        );
+    };
+
+    const destroyAnimation = () => {
+      if (!timeline) return;
+
+      // Détruit le ScrollTrigger
+      timeline.scrollTrigger?.kill();
+
+      // Détruit la timeline
+      timeline.kill();
+
+      timeline = null;
+
+      // Reset des transforms
+      gsap.set([leftColumn, rightColumn], {
+        clearProps: 'transform',
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          createAnimation();
+        } else {
+          destroyAnimation();
+        }
+      },
+      {
+        threshold: 0,
+      }
+    );
+
+    observer.observe(section);
+
+    return () => {
+      observer.disconnect();
+      destroyAnimation();
+    };
+  };
+
+  onIdle(init);
+  document.addEventListener('astro:page-load', init);
+</script>

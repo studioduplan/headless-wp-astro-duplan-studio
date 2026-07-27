@@ -1,0 +1,122 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import Footer from '@/components/Footer.astro';
+import Header from '@/components/Header.astro';
+import Seo from '@/components/Seo.astro';
+import SvgImage from '@/components/SvgImage.astro';
+import BgCircleGreen from '@/assets/images/bg-circle-green.svg';
+import type { Menu } from '@/utils/types'
+import type { PostTypeSeo, TaxonomySeo } from '@/gql/sdk';
+
+import '@fontsource/google-sans-flex/latin-400.css'; 
+import '@fontsource/google-sans-flex/latin-500.css'; 
+import '@fontsource/google-sans-flex/latin-600.css';
+
+import 'swiper/css';
+import '@/styles/global.css';
+
+export type Props = {
+  base: string,
+  primaryMenu?: Menu | null,
+  footerMenu?: Menu | null,
+  title: string,
+  description: string,
+  seo: PostTypeSeo | TaxonomySeo,
+  seoTitle: string,
+  configurationDuThMe?: {
+    themeOptions?: {
+      calUrl?: string;
+      whatsappUrl?: string;
+    };
+  }
+};
+
+const {
+  base = import.meta.env.BASE_URL,
+  title,
+  description,
+  primaryMenu,
+  footerMenu,
+  seo,
+  seoTitle = seo?.title ?? title,
+  configurationDuThMe,
+  ...head
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="fr" class="antialiased wrap-break-word">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" type="image/png" sizes="96x96" href={`${base}favicon/favicon-96x96.png`} />
+        <link rel="icon" type="image/svg+xml" href={`${base}favicon/favicon.svg`} />
+        <link rel="shortcut icon" href={`${base}favicon/favicon.ico`} />
+        <link rel="apple-touch-icon" sizes="180x180" href={`${base}favicon/apple-touch-icon.png`} />
+        <link rel="manifest" href={`${base}favicon/site.webmanifest`} />
+        <meta name="msapplication-TileColor" content="#ffffff">
+        <meta name="theme-color" content="#ffffff">
+        <meta name="generator" content={Astro.generator} />
+
+        <!-- WP Seo -->
+        <Seo seo={seo} baseUrl="http://localhost:8086" />
+        
+        <ClientRouter />
+    </head>
+    <body>
+        <Header seoTitle={seoTitle} primaryMenu={primaryMenu} configurationDuThMe={configurationDuThMe} />
+        <main>
+            <SvgImage class:list={"site-header__bg-circle-green absolute pointer-events-none -top-118.75 left-1/2 -translate-x-1/2 z-[-1]"} src={BgCircleGreen} alt="Bg Circle Green" width="950" height="950" />
+            <slot />
+        </main>
+        <Footer seo={seo} seoTitle={seoTitle} primaryMenu={primaryMenu} footerMenu={footerMenu} />
+    </body>
+</html>
+
+<script>
+    import { getLenis } from '@/scripts/lenis';
+    import { initAnchors } from '@/scripts/anchors';
+    import { initSticky } from '@/scripts/sticky';
+    import { initAnimChar } from '@/scripts/animChar';
+
+    let destroyPage: (() => void) | null = null;
+
+    async function initPage() {
+        destroyPage?.();
+        destroyPage = null;
+
+        const { lenis } = await getLenis();
+
+        const destroyAnchors = initAnchors(lenis);
+
+        const destroySticky =
+            document.querySelector('[data-sticky]')
+                ? initSticky(lenis)
+                : undefined;
+
+        if (document.querySelector('[data-anim-char]')) {
+            initAnimChar();
+        }
+
+        destroyPage = () => {
+            destroyAnchors?.();
+            destroySticky?.();
+
+            destroyPage = null;
+        };
+    }
+
+    /**
+     * Premier chargement
+     */
+    initPage();
+
+    /**
+     * Après chaque navigation ClientRouter
+     */
+    document.addEventListener(
+        'astro:page-load',
+        initPage
+    );
+</script>

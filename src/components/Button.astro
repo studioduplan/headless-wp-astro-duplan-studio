@@ -1,0 +1,159 @@
+---
+import SvgImage from '@/components/SvgImage.astro';
+import Comment from '@/assets/images/icon-comment.svg';
+
+interface Props {
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  variant?: 'primary' | 'secondary';
+  title?: string;
+  ariaLabel?: string;
+  class?: string;
+  targetBlank?: boolean,
+  isIcon?: boolean;
+}
+
+const {
+  href,
+  type = 'button',
+  variant = 'primary',
+  title,
+  ariaLabel,
+  class: customClass = '',
+  targetBlank = false,
+  isIcon = false,
+} = Astro.props;
+
+const classes = {
+  primary:
+    'relative inline-flex items-center justify-center bg-black rounded-full text-white font-semibold uppercase shadow-[0_6px_12px_rgba(0,0,0,0.25)] transition-colors duration-500 hover:bg-green-dark',
+  secondary:
+    'relative text-[14px] border-t-2 border-green-bis inline-flex gap-x-4 items-center justify-center bg-black rounded-full text-white font-semibold uppercase shadow-[0_6px_12px_rgba(0,0,0,0.25)] transition-colors duration-500 hover:bg-green-dark',
+  tertiary:
+    'relative text-[14px] border-t-2 border-gray-ter inline-flex gap-x-4 items-center justify-center bg-green-dark rounded-full text-white font-semibold uppercase shadow-[0_6px_12px_rgba(0,0,0,0.25)] transition-colors duration-500 hover:bg-green',
+};
+
+const buttonClass = `
+  char-button
+  ${classes[variant]}
+  ${isIcon ? 'pl-1 py-1 pr-7' : 'px-7 py-4'}
+  ${customClass}
+`;
+---
+
+{href ? (
+  <a
+    href={href}
+    class={buttonClass}
+    title={title}
+    aria-label={ariaLabel}
+    target={targetBlank ? '_blank' : undefined}
+    rel={targetBlank ? 'noreferrer' : undefined}
+  > 
+    {isIcon && (
+      <SvgImage src={Comment} alt="Comment" width="40" height="40" class:list={"button-icon"} />
+    )}
+    <span class="char-wrapper">
+      <slot />
+    </span>
+  </a>
+) : (
+  <button type={type} class={buttonClass} title={title}>
+    {isIcon && (
+      <SvgImage src={Comment} alt="Comment" width="40" height="40" class:list={"button-icon"} />
+    )}
+    <span class="char-wrapper">
+      <slot />
+    </span>
+  </button>
+)}
+
+<script>
+  import { loadGsap, onIdle } from '@/utils/gsap';
+
+  const init = async () => {
+    const { gsap, SplitText } = await loadGsap();
+    
+     document.querySelectorAll<HTMLElement>(".char-button").forEach((button) => {
+          const wrapper = button.querySelector<HTMLElement>(".char-wrapper");
+          const icon = button.querySelector<HTMLElement>(".button-icon");
+
+          // Pas de wrapper
+          if (!wrapper) return;
+
+          // Wrapper vide
+          if (!wrapper.textContent?.trim()) return;
+
+          const { chars } = SplitText.create(wrapper, {
+              type: "chars",
+              charsClass: "char",
+          });
+
+          // Aucun caractère généré
+          if (!chars.length) return;
+
+          gsap.set(chars, {
+              display: "inline-block",
+              y: 0,
+          });
+
+          const handleMouseEnter = () => {
+              gsap.fromTo(
+                  chars,
+                  {
+                      yPercent: 0,
+                      rotate: 0,
+                      scale: 1,
+                  },
+                  {
+                      keyframes: [
+                          {
+                              yPercent: -25,
+                              rotate: -2,
+                              scale: 1.04,
+                              duration: 0.12,
+                              ease: "sine.out",
+                          },
+                          {
+                              yPercent: 0,
+                              rotate: 0,
+                              scale: 1,
+                              duration: 0.3,
+                              ease: "sine.out(1.2, 0.5)",
+                          },
+                      ],
+                      stagger: {
+                          each: 0.012,
+                          from: "start",
+                      },
+                      overwrite: "auto",
+                  }
+              );
+
+              if (icon) {
+                  gsap.to(icon, {
+                      rotate: -90,
+                      duration: 0.3,
+                      ease: "power2.out",
+                  });
+              }
+          };
+
+          const handleMouseLeave = () => {
+              if (icon) {
+                  gsap.to(icon, {
+                      rotate: 0,
+                      duration: 0.3,
+                      ease: "power2.out",
+                  });
+              }
+          };
+
+          button.addEventListener("mouseenter", handleMouseEnter);
+          button.addEventListener("mouseleave", handleMouseLeave);
+      });
+  };
+
+  onIdle(init);
+  document.addEventListener('astro:page-load', init);
+</script>

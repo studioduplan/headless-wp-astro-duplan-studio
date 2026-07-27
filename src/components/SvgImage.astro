@@ -1,0 +1,17 @@
+---
+const {
+  class: className,
+  src,
+  alt = "",
+  width,
+  height
+} = Astro.props;
+---
+
+<img
+  class:list={[className]}
+  src={src.src}
+  alt={alt}
+  width={width}
+  height={height}
+/>

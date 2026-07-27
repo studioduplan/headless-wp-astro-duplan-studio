@@ -1,0 +1,77 @@
+---
+import { getSvgDimensions } from '@/utils/svg-dimensions';
+
+interface ColumnItem {
+  title?: string;
+  textarea?: string;
+  image?: {
+    node?: {
+      sourceUrl: string;
+      altText?: string;
+      mediaDetails?: { width?: number; height?: number };
+    };
+  };
+}
+
+interface Props {
+  items?: ColumnItem[] | null;
+  startIndex?: number;
+}
+
+const {
+  items,
+  startIndex = 1,
+} = Astro.props;
+
+// Précalcule les dimensions de chaque image (SVG ou raster) avant le rendu
+const itemsWithDimensions = await Promise.all(
+  (items ?? []).map(async (col) => {
+    const sourceUrl = col.image?.node?.sourceUrl;
+    const isSvg = sourceUrl?.endsWith('.svg');
+
+    const dimensions = isSvg && sourceUrl
+  ? await getSvgDimensions(sourceUrl)
+  : {
+      width: col.image?.node?.mediaDetails?.width,
+      height: col.image?.node?.mediaDetails?.height,
+    };
+
+    return { ...col, dimensions };
+  })
+);
+---
+
+{itemsWithDimensions?.map((col, index) => (
+  <article class="rounded-4xl bg-gray-bis p-5 lg:p-6 xl:p-7">
+    <div class="flex items-start justify-between gap-6">
+      {col.title && (
+        <h3 class="text-[clamp(1.4rem,2vw,2rem)] font-medium leading-[1.1] tracking-[-0.04em]" data-anim-char>
+          {col.title}
+        </h3>
+      )}
+
+      <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-green-bis text-sm font-medium">
+        {String(startIndex + index).padStart(2, '0')}
+      </span>
+    </div>
+
+    {col.textarea && (
+      <div class="mt-5 max-w-150 text-[clamp(0.9rem,1.1vw,1.05rem)] leading-[1.45] tracking-[-0.02em] text-black/60">
+        {col.textarea}
+      </div>
+    )}
+
+    {col.image?.node && (
+      <div class="mt-7 overflow-hidden rounded-3xl border border-black/10 bg-white">
+        <img
+          src={col.image.node.sourceUrl}
+          alt={col.image.node.altText ?? col.title ?? ''}
+          width={col.dimensions?.width}
+          height={col.dimensions?.height}
+          class="block h-auto w-full"
+          loading="lazy"
+        />
+      </div>
+    )}
+  </article>
+))}

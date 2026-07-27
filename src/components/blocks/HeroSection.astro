@@ -1,0 +1,182 @@
+---
+import { getSvgDimensions } from '@/utils/svg-dimensions';
+import SvgImage from '@/components/SvgImage.astro';
+import Flash from '@/assets/images/icon-flash.svg';
+import Button from '@/components/Button.astro';
+
+interface Props {
+  hero?: {
+    reinsurance?: string;
+    title?: string;
+    richText?: string;
+    button?: {
+      url?: string;
+      title?: string;
+    } | null;
+    richText2?: string;
+  } | null;
+  configurationDuThMe?: {
+    themeOptions?: {
+      calUrl?: string;
+      whatsappUrl?: string;
+      logos?: {
+        nodes?: Array<{
+          logo?: {
+            node?: {
+              sourceUrl: string;
+              altText?: string;
+              mediaDetails?: { width?: number; height?: number };
+            };
+          };
+        }>;
+      };
+    };
+  };
+}
+
+const { hero, configurationDuThMe } = Astro.props;
+const calUrl = configurationDuThMe?.themeOptions?.calUrl;
+const logos = configurationDuThMe?.themeOptions?.logos;
+
+const itemsWithDimensions = await Promise.all(
+  (logos ?? []).map(async (item) => {
+    const sourceUrl = item.logo?.node?.sourceUrl;
+    const isSvg = sourceUrl?.endsWith('.svg');
+
+    const dimensions = isSvg && sourceUrl
+      ? await getSvgDimensions(sourceUrl)
+      : {
+          width: item.logo?.node?.mediaDetails?.width,
+          height: item.logo?.node?.mediaDetails?.height,
+        };
+
+    return { ...item, dimensions };
+  })
+);
+---
+
+{hero && (
+  <section class="hero h-screen mb-28">
+    <div class="container h-full flex flex-col justify-center items-center pt-20">
+      {/* Badge / Réassurance */}
+      {hero.reinsurance && (
+        <div
+          class="
+            mb-10 inline-flex items-center justify-center
+            rounded-full border-2 border-black/10
+            bg-gray px-5 py-2
+            text-sm leading-none
+            sm:mb-12
+          "
+        >
+          <span
+            class="
+              mr-2 text-[20px] leading-none text-green-bis
+            "
+          >
+            <SvgImage src={Flash} alt="Flash" width="15" height="20" />
+          </span>
+
+          <span set:html={hero.reinsurance} />
+        </div>
+      )}
+
+      {/* Titre principal */}
+      {hero.title && (
+        <h1
+          class="
+            hero__title
+            mx-auto max-w-312.5
+            text-balance
+            text-center
+            font-semibold
+            tracking-[-2%]
+            leading-21.25
+            text-black text-[80px]
+
+            [&_strong]:relative
+            [&_strong]:z-0
+            [&_strong]:font-semibold
+            [&_strong]:isolate
+            [&_strong]:inline-block
+            [&_strong]:text-green-bis
+
+            [&_strong]:before:absolute
+            [&_strong]:before:-z-10
+            [&_strong]:before:top-1/2
+            [&_strong]:before:-translate-y-1/2
+            [&_strong]:before:-left-1.75
+            [&_strong]:before:w-[calc(100%+20px)]
+            [&_strong]:before:h-[calc(100%+8px)]
+            [&_strong]:before:rounded-md
+            [&_strong]:before:bg-green-dark
+
+            [&_strong:first-of-type::before]:mt-1
+            [&_strong:first-of-type::before]:-rotate-1
+            [&_strong:last-of-type::before]:rotate-2
+          "
+          set:html={hero.title} data-anim-char="hero"
+        />
+      )}
+
+      {/* Texte descriptif */}
+      {hero.richText && (
+        <div
+          class="
+            mt-10
+            text-center
+            max-w-155
+            text-[17px]
+            leading-[1.45]
+            tracking-[-0.02em]
+            text-black/60
+            sm:mt-12
+            sm:text-[18px]
+            [&_strong]:text-green-dark
+          "
+          set:html={hero.richText}
+        />
+      )}
+
+      {/* CTA */}
+      {hero.button && (
+        <Button href={calUrl} variant="secondary" targetBlank isIcon class:list={"mt-12"}>
+            {hero.button}
+        </Button>
+      )}
+
+      {/* Preuve sociale / Logos */}
+      {hero.richText2 && (
+        <div
+          class="
+            mt-16
+            text-center
+            w-full
+            max-w-212.5
+            text-[16px]
+            leading-[1.4]
+            text-black/60
+            [&_strong]:text-green-dark
+          "
+          set:html={hero.richText2}
+        />
+      )}
+      {logos && (
+        <ul class="mt-10 flex items-center justify-center gap-8">
+          {itemsWithDimensions.map((item, index) => (
+            <li>
+              <img
+                src={item.logo?.node?.sourceUrl}
+                alt={item.logo?.node?.altText || ''}
+                width={item.dimensions?.width}
+                height={item.dimensions?.height}
+                loading={index === 0 ? 'eager' : 'lazy'}
+                fetchpriority={index === 0 ? 'high' : 'auto'}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </section>
+)}

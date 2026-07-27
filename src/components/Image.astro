@@ -1,0 +1,33 @@
+---
+import { Image as AstroImage } from "astro:assets";
+
+const {
+  src,
+  alt = "",
+  width,
+  height
+} = Astro.props;
+
+const isSvg = typeof src === "string"
+  ? src.endsWith(".svg")
+  : src.src?.endsWith(".svg");
+---
+
+{
+  isSvg ? (
+    <img
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+    />
+  ) : (
+    <AstroImage
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      format="avif"
+    />
+  )
+}

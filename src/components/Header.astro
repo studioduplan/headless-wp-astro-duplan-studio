@@ -1,0 +1,71 @@
+---
+import Nav from '@/components/Nav.astro';
+import type { Menu } from '@/utils/types';
+import SvgImage from '@/components/SvgImage.astro';
+import Logo from '@/assets/images/logo-duplan-studio.svg';
+import Button from '@/components/Button.astro';
+import WhatsApp from '@/assets/icons/WhatsApp.astro';
+
+export type Props = {
+  primaryMenu?: Menu | null;
+  seoTitle?: string;
+  siteUrl?: string;
+  configurationDuThMe?: {
+    themeOptions?: {
+      calUrl?: string;
+      whatsappUrl?: string;
+    };
+  };
+};
+
+const {
+  primaryMenu,
+  seoTitle,
+  siteUrl = import.meta.env.SITE ?? "/",
+  configurationDuThMe,
+  ...head
+} = Astro.props;
+
+const cal_url = configurationDuThMe?.themeOptions?.calUrl;
+const whatsapp_url = configurationDuThMe?.themeOptions?.whatsappUrl;
+---
+
+<header class="site-header fixed top-8 left-0 right-0 w-full z-50" data-sticky>
+    <div class="container">
+        <div class="site-header__wrapper w-full mx-auto flex justify-between items-center px-8 py-5 bg-transparent backdrop-blur-lg border-2 border-transparent rounded-full transition-[background-color,max-width,border-color] duration-1000 ease-snappy max-w-full">
+            <a href={siteUrl} class="site-header__logo">
+                <SvgImage src={Logo} alt={seoTitle} width="185" height="28" />
+            </a>
+            <div class="site-header__nav flex items-center">
+                <Nav menu={primaryMenu} />
+                <Button href={cal_url} variant="primary" targetBlank class:list={"site-header__cal ml-8 after:absolute after:right-0 after:top-0 after:bg-green-bis after:border after:border-white after:rounded-full after:w-4 after:h-4"}>
+                    Prendre un rendez-vous
+                </Button>
+                <a class="site-header__whatsapp group relative inline-flex justify-center items-center ml-4 bg-green-bis rounded-full border border-black w-11 h-11 transition-colors duration-500 ease-snappy hover:bg-green" href={whatsapp_url} target="_blank" rel="noreferrer" aria-label="WhatsApp">
+                    <span class="circle absolute w-14 h-14 border border-green-bis rounded-full transition-all duration-500 ease-bounce group-hover:scale-110 group-hover:border-green"></span>
+                    <WhatsApp />
+                </a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<style>
+    @reference "../styles/global.css";
+
+    header.site-header.is-sticky .site-header__wrapper {
+        @apply max-w-237.5 border-black/10;
+    }
+
+    header.site-header .site-header__logo svg :global(path) {
+        @apply transition-colors duration-500 ease-snappy;
+    }
+
+    header.site-header.is-contrast .site-header__wrapper {
+        @apply bg-white/60;
+    }
+
+    header.site-header.is-contrast .site-header__logo svg :global(path) {
+        @apply fill-white;
+    }
+</style>

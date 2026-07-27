@@ -1,0 +1,33 @@
+---
+interface FaqItem {
+  title?: string;
+}
+
+interface Props {
+  faq?: {
+    title?: string;
+    textarea?: string;
+    items?: { nodes?: FaqItem[] };
+  } | null;
+}
+
+const { faq } = Astro.props;
+---
+
+{faq && (
+  <section class="faq py-section">
+    {faq.title && <h2 set:html={faq.title} />}
+    {faq.textarea && <p>{faq.textarea}</p>}
+
+    <div class="faq-items">
+      {faq.items?.nodes?.map((faqItem) => (
+        <details>
+          <summary>{faqItem.title}</summary>
+          {/* TODO: pas de contenu détaillé pour l'instant — le CPT "faqs"
+              n'expose pas encore de groupe ACF pour la réponse.
+              Ajouter le champ à la requête GraphQL dès qu'il sera dispo. */}
+        </details>
+      ))}
+    </div>
+  </section>
+)}

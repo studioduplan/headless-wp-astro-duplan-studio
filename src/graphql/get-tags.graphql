@@ -1,0 +1,52 @@
+query GetTags {
+    nodeByUri(uri: "tag") {
+        __typename
+        ... on Page {
+            id
+            seo {
+                ...PostTypeSEOMetadata
+            }
+            featuredImage {
+                node {
+                    srcSet
+                    sourceUrl
+                    altText
+                    caption
+                    title
+                    mediaDetails {
+                        height
+                        width
+                    }
+                }
+            }
+            editorBlocks(flat: false) {
+                ...WPBlocks
+                ... on CoreMediaText {
+                    __typename
+                    clientId
+                    parentClientId
+                    innerBlocks {
+                        ...WPBlocks
+                    }
+                }
+            }
+        }
+    }
+    tags(where: { orderby: COUNT, hideEmpty: true }, first: 200) {
+        __typename
+        edges {
+            node {
+                ... on Tag {
+                    __typename
+                    id
+                    name
+                    description
+                    slug
+                    uri
+                    count
+                }
+            }
+        }
+    }
+    ...GeneralSettings
+}

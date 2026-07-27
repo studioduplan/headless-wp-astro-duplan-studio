@@ -1,0 +1,79 @@
+fragment WPBlocks on EditorBlock {
+    ... on CoreParagraph {
+        clientId
+        parentClientId
+        __typename
+        attributes {
+            align
+        }
+    }
+    ... on CoreHeading {
+        clientId
+        parentClientId
+        __typename
+        attributes {
+            level
+            align
+        }
+    }
+    ... on CoreList {
+        clientId
+        parentClientId
+        __typename
+        attributes {
+            ordered
+        }
+        innerBlocks {
+            ... on CoreListItem {
+                __typename
+                clientId
+            }
+        }
+    }
+    ... on CoreImage {
+        clientId
+        parentClientId
+        __typename
+        attributes {
+            alt
+            aspectRatio
+            title
+            url
+        }
+    }
+    ... on CoreQuote {
+        clientId
+        parentClientId
+        __typename
+        attributes {
+            value
+        }
+    }
+    ... on CoreCode {
+        clientId
+        parentClientId
+        __typename
+        attributes {
+            className
+        }
+    }
+    ... on CoreButtons {
+        clientId
+        parentClientId
+        __typename
+        innerBlocks {
+            ... on CoreButton {
+                __typename
+                clientId
+                parentClientId
+                attributes {
+                    anchor
+                    backgroundColor
+                    url
+                    title
+                    rel
+                }
+            }
+        }
+    }
+}

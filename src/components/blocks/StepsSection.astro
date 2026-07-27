@@ -1,0 +1,155 @@
+---
+import Button from '@/components/Button.astro';
+import { getSvgDimensions } from '@/utils/svg-dimensions';
+
+interface StepItem {
+  stepTitle?: string;
+  title?: string;
+  textarea?: string;
+  image?: {
+    node?: {
+      sourceUrl: string;
+      altText?: string;
+      mediaDetails?: { width?: number; height?: number };
+    };
+  };
+}
+
+interface Props {
+  steps?: {
+    title?: string;
+    textarea?: string;
+    button?: string;
+    item?: StepItem[];
+  } | null;
+  configurationDuThMe?: {
+    themeOptions?: { calUrl?: string };
+  };
+}
+
+const { steps, configurationDuThMe } = Astro.props;
+const calUrl = configurationDuThMe?.themeOptions?.calUrl;
+
+// Précalcule les dimensions de chaque image (SVG ou raster) avant le rendu
+const itemsWithDimensions = await Promise.all(
+  (steps?.item ?? []).map(async (step) => {
+    const sourceUrl = step.image?.node?.sourceUrl;
+    const isSvg = sourceUrl?.endsWith('.svg');
+
+    const dimensions = isSvg && sourceUrl
+  ? await getSvgDimensions(sourceUrl)
+  : {
+      width: step.image?.node?.mediaDetails?.width,
+      height: step.image?.node?.mediaDetails?.height,
+    };
+
+    return { ...step, dimensions };
+  })
+);
+---
+
+{steps && (
+  <section class="steps py-section">
+    <div class="container">
+      <div class="steps__head text-center">
+        {steps.title && (
+          <h2
+            set:html={steps.title}
+            class="
+              [&_strong]:font-medium
+              [&_strong]:relative
+              [&_strong]:z-0
+              [&_strong]:isolate
+              [&_strong]:inline-block
+              [&_strong]:text-green-bis
+              [&_strong]:before:absolute
+              [&_strong]:before:-z-10
+              [&_strong]:before:top-1/2
+              [&_strong]:before:-translate-y-1/2
+              [&_strong]:before:-left-2
+              [&_strong]:before:w-[calc(100%+20px)]
+              [&_strong]:before:h-[calc(100%+8px)]
+              [&_strong]:before:rounded-md
+              [&_strong]:before:bg-green-dark
+              [&_strong:first-of-type::before]:mt-1
+              [&_strong:first-of-type::before]:rotate-1
+              mx-auto max-w-260 text-center text-[clamp(2rem,3vw,3rem)] font-medium leading-tight tracking-[-0.04em]
+            "
+            data-anim-char
+          />
+        )}
+
+        {steps.textarea && (
+          <p class="mx-auto mt-7 max-w-170 text-lg text-black/60">
+            {steps.textarea}
+          </p>
+        )}
+
+        {steps.button && (
+          <Button href={calUrl} variant="secondary" targetBlank isIcon class:list={"mt-8"}>
+            {steps.button}
+          </Button>
+        )}
+      </div>
+
+      <ol class="mt-20 grid grid-cols-1 gap-12 sm:mt-24 lg:grid-cols-3 lg:gap-5">
+        {itemsWithDimensions.map((step) => (
+          <li class="min-w-0">
+            <div class="flex h-full flex-col">
+              {step.stepTitle && (
+                <span
+                  class="
+                    inline-flex w-fit items-center
+                    rounded-sm bg-green-dark
+                    px-4 py-2.75
+                    font-bold uppercase
+                    tracking-[-0.02em] text-white
+                  "
+                  data-anim-char
+                >
+                  {step.stepTitle}
+                </span>
+              )}
+
+              {step.title && (
+                <h3 class="mt-5 text-lg font-semibold" data-anim-char>
+                  {step.title}
+                </h3>
+              )}
+
+              {step.textarea && (
+                <p class="mt-2 text-lg text-black/60">
+                  {step.textarea}
+                </p>
+              )}
+
+              {step.image?.node && (
+                <div
+                  class="
+                    relative mt-7
+                    flex aspect-[1.03/1] w-full
+                    items-center justify-center
+                    overflow-hidden
+                    rounded-4xl
+                    border border-[#999999]
+                    bg-[#FAFBFC]
+                    lg:mt-7
+                  "
+                >
+                  <img
+                    src={step.image.node.sourceUrl}
+                    alt={step.image.node.altText ?? ''}
+                    width={step.dimensions?.width}
+                    height={step.dimensions?.height}
+                    class="h-full w-full object-contain"
+                    loading="lazy"
+                  />
+                </div>
+              )}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+)}

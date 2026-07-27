@@ -1,0 +1,55 @@
+fragment GeneralSettings on RootQuery {
+    primaryMenu: menus(where: { location: MAIN_MENU }) {
+        nodes {
+            __typename
+            name
+            menuItems {
+                nodes {
+                    uri
+                    url
+                    order
+                    label
+                    id
+                    parentId
+                }
+            }
+        }
+    }
+
+    footerMenu: menus(where: { location: FOOTER_LEGAL_PAGES_MENU }) {
+        nodes {
+            __typename
+            name
+            menuItems {
+                nodes {
+                    uri
+                    url
+                    order
+                    label
+                    id
+                    parentId
+                }
+            }
+        }
+    }
+
+    generalSettings {
+        title
+        url
+        description
+    }
+
+    configurationDuThMe {
+        themeOptions {
+            calUrl
+            whatsappUrl
+            logos {
+                logo {
+                    node {
+                        ...AcfImageFields
+                    }
+                }
+            }
+        }
+    }
+}
