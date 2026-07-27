@@ -130,6 +130,7 @@ fragment HomeContentFields on HomeContent {
                     id
                     title
                     uri
+                    content
                 }
             }
         }

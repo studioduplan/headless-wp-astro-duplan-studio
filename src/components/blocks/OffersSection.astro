@@ -1,4 +1,6 @@
 ---
+import Button from '@/components/Button.astro';
+
 interface OfferItem {
   title?: string;
   textarea?: string;
@@ -14,27 +16,124 @@ interface Props {
     textarea?: string;
     item?: OfferItem[];
   } | null;
+  configurationDuThMe?: {
+    themeOptions?: {
+      calUrl?: string;
+      whatsappUrl?: string;
+      logos?: {
+        nodes?: Array<{
+          logo?: {
+            node?: {
+              sourceUrl: string;
+              altText?: string;
+              mediaDetails?: { width?: number; height?: number };
+            };
+          };
+        }>;
+      };
+    };
+  };
 }
 
-const { offers } = Astro.props;
+const { offers, configurationDuThMe } = Astro.props;
+const calUrl = configurationDuThMe?.themeOptions?.calUrl;
 ---
 
 {offers && (
-  <section id="offres" class="offers py-section">
-    {offers.title && <h2 set:html={offers.title} />}
-    {offers.textarea && <p>{offers.textarea}</p>}
+  <section id="offres" class="py-20 px-4 max-w-6xl mx-auto flex flex-col items-center text-center font-sans bg-white">
+    {/* Titres principaux */}
+    {offers.title && (
+      <h2 
+        class="[&_strong]:font-medium
+            [&_strong]:relative
+            [&_strong]:z-0
+            [&_strong]:isolate
+            [&_strong]:inline-block
+            [&_strong]:text-green-bis
 
-    <div class="offer-cards">
-      {offers.item?.map((offer) => (
-        <div class="offer-card">
-          <h3>{offer.title}</h3>
-          <p>{offer.textarea}</p>
-          <span>{offer.estimateText}</span>
-          <span>{offer.delivery}</span>
-          {offer.list && <div set:html={offer.list} />}
-          {offer.button && <a href="#">{offer.button}</a>}
-        </div>
-      ))}
+            [&_strong]:before:absolute
+            [&_strong]:before:-z-10
+            [&_strong]:before:top-1/2
+            [&_strong]:before:-translate-y-1/2
+            [&_strong]:before:-left-2
+            [&_strong]:before:w-[calc(100%+20px)]
+            [&_strong]:before:h-[calc(100%+8px)]
+            [&_strong]:before:rounded-md
+            [&_strong]:before:bg-green-dark
+
+            [&_strong:first-of-type::before]:mt-1
+            [&_strong:first-of-type::before]:-rotate-1
+            mx-auto max-w-200 text-center text-[clamp(2rem,3vw,3rem)] font-medium leading-tight tracking-[-0.04em]" 
+        set:html={offers.title} 
+      data-anim-char/>
+    )}
+    {offers.textarea && (
+      <p class="text-black/60 mt-12 max-w-xl text-base md:text-lg mb-16 leading-relaxed">
+        {offers.textarea}
+      </p>
+    )}
+
+    {/* Grille des cartes */}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl items-stretch">
+      {offers.item?.map((offer, index) => {
+        // Détection de la deuxième carte (Site complet) pour appliquer le thème sombre/vert
+        const isDark = index === 1;
+
+        return (
+          <div 
+            class={`flex flex-col text-left rounded-4xl p-8 md:p-10 border transition-all duration-300 ${
+              isDark 
+                ? 'bg-linear-to-b from-[#0e271f] via-[#091b15] to-[#040807] text-white border-transparent shadow-xl' 
+                : 'bg-white text-neutral-900 border-neutral-200 shadow-sm'
+            }`}
+          >
+            {/* En-tête de la carte */}
+            <h3 class="text-2xl font-bold mb-3" data-anim-char>{offer.title}</h3>
+            <p class={`text-sm leading-relaxed mb-6 ${isDark ? 'text-neutral-400' : 'text-neutral-500'}`}>
+              {offer.textarea}
+            </p>
+
+            {/* Infos de tarification et livraison */}
+            <div class="flex items-center justify-between gap-4 mb-6">
+              <span class="text-xl font-bold">{offer.estimateText}</span>
+              <span 
+                class={`text-xs font-semibold px-3 py-1.5 rounded-full border ${
+                  isDark 
+                    ? 'bg-neutral-800/50 border-neutral-700 text-neutral-300' 
+                    : 'bg-neutral-100 border-neutral-300 text-neutral-600'
+                }`}
+              >
+                {offer.delivery}
+              </span>
+            </div>
+
+            {/* Bouton d'action */}
+          {offer.button && (
+            <Button href={calUrl} variant={isDark ? 'tertiary' : 'secondary'} targetBlank class:list={"mb-8"}>
+                {offer.button}
+            </Button>
+          )}
+
+            {/* Séparateur horizontal discret */}
+            <hr class={`mb-6 border-t ${isDark ? 'border-neutral-800' : 'border-neutral-100'}`} />
+
+            {/* Liste à puces stylisée (Inclus dans cette offre) */}
+            {offer.list && (
+              <div 
+                class={`text-sm space-y-4 font-medium grow
+                  [&_p]:text-xs [&_p]:font-semibold [&_p]:uppercase [&_p]:tracking-wider [&_p]:mb-4
+                  ${isDark ? '[&_p]:text-neutral-400' : '[&_p]:text-neutral-400'}
+                  [&_ul]:space-y-3.5
+                  [&_li]:flex [&_li]:items-start [&_li]:gap-3
+                  [&_li]:before:content-['✓'] [&_li]:before:font-bold [&_li]:before:text-xs [&_li]:before:flex [&_li]:before:items-center [&_li]:before:justify-center [&_li]:before:h-5
+                  ${isDark ? '[&_li]:before:text-[#4ade80] text-neutral-300' : '[&_li]:before:text-neutral-500 text-neutral-600'}
+                `} 
+                set:html={offer.list} 
+              />
+            )}
+          </div>
+        );
+      })}
     </div>
   </section>
 )}

@@ -1,6 +1,11 @@
 ---
+import SvgImage from '@/components/SvgImage.astro';
+import More from '@/assets/images/icon-more.svg';
+import Less from '@/assets/images/icon-less.svg';
+
 interface FaqItem {
   title?: string;
+  content?: string;
 }
 
 interface Props {
@@ -12,22 +17,106 @@ interface Props {
 }
 
 const { faq } = Astro.props;
+
+const nodes = faq?.items?.nodes || [];
+const leftColumnItems = nodes.filter((_, index) => index % 2 === 0);
+const rightColumnItems = nodes.filter((_, index) => index % 2 !== 0);
 ---
 
 {faq && (
-  <section class="faq py-section">
-    {faq.title && <h2 set:html={faq.title} />}
-    {faq.textarea && <p>{faq.textarea}</p>}
+  <section class="py-20 px-4 max-w-6xl mx-auto flex flex-col items-center text-center font-sans bg-white">
+    {/* Titre de la FAQ */}
+    {faq.title && (
+      <h2 
+        class="[&_strong]:font-medium
+            [&_strong]:relative
+            [&_strong]:z-0
+            [&_strong]:isolate
+            [&_strong]:inline-block
+            [&_strong]:text-green-bis
+            [&_strong]:before:absolute
+            [&_strong]:before:-z-10
+            [&_strong]:before:top-1/2
+            [&_strong]:before:-translate-y-1/2
+            [&_strong]:before:-left-2
+            [&_strong]:before:w-[calc(100%+20px)]
+            [&_strong]:before:h-[calc(100%+8px)]
+            [&_strong]:before:rounded-md
+            [&_strong]:before:bg-green-dark
+            [&_strong:first-of-type::before]:mt-1
+            [&_strong:first-of-type::before]:-rotate-1
+            mx-auto max-w-260 text-center text-balance text-[clamp(2rem,3vw,3rem)] font-medium leading-tight tracking-[-0.04em]" 
+        set:html={faq.title} 
+      />
+    )}
+    
+    {/* Sous-titre */}
+    {faq.textarea && (
+      <p class="text-black/60 mt-12 max-w-xl text-lg mb-16 leading-relaxed">
+        {faq.textarea}
+      </p>
+    )}
 
-    <div class="faq-items">
-      {faq.items?.nodes?.map((faqItem) => (
-        <details>
-          <summary>{faqItem.title}</summary>
-          {/* TODO: pas de contenu détaillé pour l'instant — le CPT "faqs"
-              n'expose pas encore de groupe ACF pour la réponse.
-              Ajouter le champ à la requête GraphQL dès qu'il sera dispo. */}
-        </details>
-      ))}
+    {/* Grille FAQ en deux colonnes indépendantes */}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-5xl text-left items-start">
+      
+      {/* Colonne Gauche (Éléments pairs) */}
+      <div class="flex flex-col gap-4">
+        {leftColumnItems.map((faqItem) => (
+          <details name="faq-accordion" class="group border border-green-bis bg-green-light rounded-2xl p-4 md:p-5 transition-all duration-200">
+            <summary class="flex items-center justify-between gap-4 font-medium list-none cursor-pointer select-none [&::-webkit-details-marker]:hidden">
+              <span class="text-base md:text-lg" set:html={faqItem.title} />
+              {More && <SvgImage src={More} alt="More" width="50" height="50" class:list={"group-open:hidden"} />}
+              {Less && <SvgImage src={Less} alt="Less" width="50" height="50" class:list={"hidden group-open:inline-block"} />}
+            </summary>
+            <div class="mt-4 pt-4 border-t border-green-dark leading-relaxed animate-fadeIn" set:html={faqItem.content} />
+          </details>
+        ))}
+      </div>
+
+      {/* Colonne Droite (Éléments impairs) */}
+      <div class="flex flex-col gap-4">
+        {rightColumnItems.map((faqItem) => (
+          <details name="faq-accordion" class="group border border-green-bis bg-green-light rounded-2xl p-4 md:p-5 transition-all duration-200">
+            <summary class="flex items-center justify-between gap-4 font-medium list-none cursor-pointer select-none [&::-webkit-details-marker]:hidden">
+              <span class="text-base md:text-lg" set:html={faqItem.title} />
+              {More && <SvgImage src={More} alt="More" width="50" height="50" class:list={"group-open:hidden"} />}
+              {Less && <SvgImage src={Less} alt="Less" width="50" height="50" class:list={"hidden group-open:inline-block"} />}
+            </summary>
+            <div class="mt-4 pt-4 border-t border-green-dark leading-relaxed animate-fadeIn" set:html={faqItem.content} />
+          </details>
+        ))}
+      </div>
+
     </div>
   </section>
 )}
+
+<script>
+  // Script Astro exécuté côté client pour gérer la fermeture automatique globale
+  const accordions = document.querySelectorAll('details[name="faq-accordion"]');
+
+  accordions.forEach((accordion) => {
+    accordion.addEventListener('toggle', (event) => {
+      // On n'agit que si l'accordéon vient d'être ouvert
+      if ((event.target as HTMLDetailsElement).open) {
+        accordions.forEach((otherAccordion) => {
+          // On ferme tous les autres accordéons ouverts (même ceux de l'autre colonne)
+          if (otherAccordion !== event.target && (otherAccordion as HTMLDetailsElement).open) {
+            otherAccordion.removeAttribute('open');
+          }
+        });
+      }
+    });
+  });
+</script>
+
+<style>
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fadeIn {
+    animation: fadeIn 0.2s ease-out forwards;
+  }
+</style>

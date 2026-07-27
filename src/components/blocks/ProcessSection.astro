@@ -29,7 +29,7 @@ const { process } = Astro.props;
             [&_strong]:before:-z-10
             [&_strong]:before:top-1/2
             [&_strong]:before:-translate-y-1/2
-            [&_strong]:before:-left-[8px]
+            [&_strong]:before:-left-2
             [&_strong]:before:w-[calc(100%+20px)]
             [&_strong]:before:h-[calc(100%+8px)]
             [&_strong]:before:rounded-md
@@ -37,7 +37,7 @@ const { process } = Astro.props;
 
             [&_strong:first-of-type::before]:mt-1
             [&_strong:first-of-type::before]:-rotate-1
-            mx-auto max-w-[1040px] text-center text-[clamp(2rem,3vw,3rem)] font-medium leading-tight tracking-[-0.04em]"
+            mx-auto max-w-260 text-center text-[clamp(2rem,3vw,3rem)] font-medium leading-tight tracking-[-0.04em]"
           set:html={process.title} data-anim-char
         />
       )}

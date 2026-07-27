@@ -19643,7 +19643,7 @@ export type HomeContentFieldsFragment = { hero: { reinsurance: string | null, ti
         | { id: string, title: string | null, uri: string | null, content: string | null, featuredImage: { node: { id: string, sourceUrl: string | null, altText: string | null } } | null, realizationsToTag: { nodes: Array<{ id: string, name: string | null, slug: string | null, uri: string | null }> } | null, realizationContent: RealizationContentFieldsFragment | null }
         | Record<PropertyKey, never>
       > } | null } | null, offers: { title: string | null, textarea: string | null, item: Array<{ title: string | null, textarea: string | null, estimateText: string | null, delivery: string | null, button: string | null, listText: string | null, list: string | null } | null> | null } | null, faq: { title: string | null, textarea: string | null, items: { nodes: Array<
-        | { id: string, title: string | null, uri: string | null }
+        | { id: string, title: string | null, uri: string | null, content: string | null }
         | Record<PropertyKey, never>
       > } | null } | null };
 
@@ -20564,6 +20564,7 @@ export const HomeContentFieldsFragmentDoc = gql`
           id
           title
           uri
+          content
         }
       }
     }
