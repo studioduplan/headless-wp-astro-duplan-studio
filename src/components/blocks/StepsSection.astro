@@ -1,6 +1,8 @@
 ---
 import Button from '@/components/Button.astro';
 import { getSvgDimensions } from '@/utils/svg-dimensions';
+import SvgImage from '@/components/SvgImage.astro';
+import BgCircleGreen from '@/assets/images/bg-circle-green.svg';
 
 interface StepItem {
   stepTitle?: string;
@@ -49,7 +51,8 @@ const itemsWithDimensions = await Promise.all(
 ---
 
 {steps && (
-  <section class="steps py-section">
+  <section class="steps relative py-section">
+    <SvgImage class:list={"site-header__bg-circle-green absolute pointer-events-none top-1/2 -left-118.75 -translate-y-1/2 z-[-1]"} src={BgCircleGreen} alt="Bg Circle Green" width="950" height="950" />
     <div class="container">
       <div class="steps__head text-center">
         {steps.title && (
@@ -73,7 +76,7 @@ const itemsWithDimensions = await Promise.all(
               [&_strong]:before:bg-green-dark
               [&_strong:first-of-type::before]:mt-1
               [&_strong:first-of-type::before]:rotate-1
-              mx-auto max-w-260 text-center text-[clamp(2rem,3vw,3rem)] font-medium leading-tight tracking-[-0.04em]
+              mx-auto max-w-150 xl:max-w-260 text-center text-[clamp(2rem,3vw,3rem)] font-medium leading-tight tracking-[-0.04em]
             "
             data-anim-char
           />

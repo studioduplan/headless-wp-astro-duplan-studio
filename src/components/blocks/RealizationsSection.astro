@@ -5,6 +5,7 @@ import SvgImage from '@/components/SvgImage.astro';
 import Stars from '@/assets/images/icon-stars.svg';
 import SliderArrowUp from '@/assets/images/slider-arrow-up.svg';
 import SliderArrowDown from '@/assets/images/slider-arrow-down.svg';
+import Ellipse from '@/assets/images/ellipse.svg';
 
 interface RealizationItem {
   uri: string;
@@ -127,6 +128,7 @@ const itemsWithDimensions = await Promise.all(
           pb-20
         "
       >
+        <SvgImage class:list={"site-header__bg-circle-green absolute pointer-events-none top-0 right-0 z-[-1]"} src={Ellipse} alt="Ellipse" width="357" height="386" />
         <!-- HEADER -->
         <div class="relative z-10 mx-auto max-w-190 text-center">
           {realizations.reinsurance && (
@@ -141,7 +143,7 @@ const itemsWithDimensions = await Promise.all(
               set:html={realizations.title}
               class="
                 mx-auto mt-7
-                max-w-260
+                max-w-150 xl:max-w-260
                 text-center
                 text-[clamp(2rem,3vw,3rem)]
                 font-medium
@@ -194,14 +196,15 @@ const itemsWithDimensions = await Promise.all(
         <div
           class="
             relative mx-auto mt-20
-            h-150
+            h-auto xl:h-150
             overflow-hidden
             lg:mt-16.25
+            flex gap-y-8 flex-col-reverse items-center xl:block
           "
         >
           <!-- Dégradés qui fondent les slides voisines dans le noir -->
-          <div class="pointer-events-none absolute inset-x-0 top-0 z-10 h-10 bg-linear-to-b from-black to-transparent"></div>
-          <div class="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-10 bg-linear-to-t from-black to-transparent"></div>
+          <div class="hidden xl:block pointer-events-none absolute inset-x-0 top-0 z-10 h-10 bg-linear-to-b from-black to-transparent"></div>
+          <div class="hidden xl:block pointer-events-none absolute inset-x-0 bottom-0 z-10 h-10 bg-linear-to-t from-black to-transparent"></div>
 
           <!-- Swiper -->
           <div class="swiper realizations-swiper">
@@ -211,12 +214,14 @@ const itemsWithDimensions = await Promise.all(
                   <div
                     class="
                       realization-card
-                      grid!
+                      flex
+                      flex-col
+                      xl:grid!
                       grid-cols-1
                       items-center
                       gap-10
-                      lg:grid-cols-2
-                      lg:gap-0
+                      xl:grid-cols-2
+                      xl:gap-0
                       w-full
                     "
                   >
@@ -230,8 +235,8 @@ const itemsWithDimensions = await Promise.all(
                           duration-700
                           ease-snappy
                           will-change-transform
-                          max-w-128.25
-                          h-86.25
+                          max-w-full xl:max-w-128.25
+                          h-auto xl:h-86.25
                           overflow-hidden
                           rounded-xl
                           bg-[#111111]
@@ -249,7 +254,7 @@ const itemsWithDimensions = await Promise.all(
                     </div>
 
                     <!-- INFORMATIONS -->
-                    <div class="realization-card-content mx-auto w-full max-w-110">
+                    <div class="realization-card-content mx-auto w-full max-w-full xl:max-w-110">
                       {item.realizationContent?.logo?.node && (
                         <img
   src={item.realizationContent.logo.node.sourceUrl}
@@ -318,21 +323,19 @@ const itemsWithDimensions = await Promise.all(
           <!-- NAVIGATION -->
           <div
             class="
-              absolute
-              left-1/2
-              top-1/2
+              xl:absolute
+              xl:left-1/2
+              xl:top-1/2
               z-20
-              hidden
-              -translate-x-1/2
-              -translate-y-1/2
-              lg:block
+              xl:-translate-x-1/2
+              xl:-translate-y-1/2
             "
           >
-            <div class="flex rounded-full bg-gray-bis p-1">
-              <div class="flex flex-col gap-y-1">
+            <div class="flex justify-center rounded-full bg-gray-bis p-1">
+              <div class="flex flex-row xl:flex-col gap-y-1">
                 <button
                   type="button"
-                  class="realizations-prev [&.swiper-button-disabled]:opacity-20 transition-colors duration-500 ease-snappy rounded-full border-2 border-transparent hover:border-green-bis"
+                  class="realizations-prev [&.swiper-button-disabled]:opacity-20 transition-colors duration-500 ease-snappy rounded-full border-2 border-transparent hover:border-green-bis -rotate-90 xl:rotate-0"
                   aria-label="Projet précédent"
                 >
                   <SvgImage src={SliderArrowUp} alt="Slider Arrow Up" width="50" height="50" />
@@ -340,7 +343,7 @@ const itemsWithDimensions = await Promise.all(
 
                 <button
                   type="button"
-                  class="realizations-next [&.swiper-button-disabled]:opacity-20 transition-colors duration-500 ease-snappy rounded-full border-2 border-transparent hover:border-green-bis"
+                  class="realizations-next [&.swiper-button-disabled]:opacity-20 transition-colors duration-500 ease-snappy rounded-full border-2 border-transparent hover:border-green-bis -rotate-90 xl:rotate-0"
                   aria-label="Projet suivant"
                 >
                   <SvgImage src={SliderArrowDown} alt="Slider Arrow Down" width="50" height="50" />
@@ -392,7 +395,7 @@ const itemsWithDimensions = await Promise.all(
   }
 
   .realizations-swiper .swiper-slide-active .realization-card-img {
-    @apply max-w-128.25;
+    @apply max-w-full xl:max-w-128.25;
   }
 
   .realizations-swiper .swiper-slide-active .realization-card-content {
@@ -402,137 +405,135 @@ const itemsWithDimensions = await Promise.all(
 
 <script>
   function initRealizationsSlider(container: HTMLElement) {
-  const slider = container.querySelector<HTMLElement>('.realizations-swiper');
-  if (!slider || slider.dataset.swiperInitialized === 'true') return;
+    const slider = container.querySelector<HTMLElement>('.realizations-swiper');
+    if (!slider) return;
 
-  const wrapper = slider.querySelector<HTMLElement>('.swiper-wrapper');
-  const prev = container.querySelector<HTMLElement>('.realizations-prev');
-  const next = container.querySelector<HTMLElement>('.realizations-next');
+    const wrapper = slider.querySelector<HTMLElement>('.swiper-wrapper');
+    const prev = container.querySelector<HTMLElement>('.realizations-prev');
+    const next = container.querySelector<HTMLElement>('.realizations-next');
 
-  if (!wrapper || !prev || !next) return;
+    if (!wrapper || !prev || !next) return;
 
-  // On récupère les slides originales
-  const originalSlides = Array.from(
-    wrapper.querySelectorAll<HTMLElement>('.swiper-slide')
-  );
+    // Breakpoint : en dessous de 1025px -> horizontal, au dessus -> vertical
+    const mq = window.matchMedia('(min-width: 1025px)');
 
-  if (originalSlides.length <= 1) return;
+    let originalSlides: HTMLElement[] | null = null;
+    let currentSwiper: any = null;
 
-  // Nombre de clones nécessaires
-  // 2 ou 3 fonctionne généralement bien avec centeredSlides + slidesPerView: 1.5
-  const cloneCount = Math.min(2, originalSlides.length);
+    function clearClones() {
+      wrapper?.querySelectorAll('[data-clone="true"]').forEach((el) => el.remove());
+    }
 
-  // Clones de fin -> ajoutés au début
-  const prependClones = originalSlides
-    .slice(-cloneCount)
-    .map((slide) => {
-      const clone = slide.cloneNode(true) as HTMLElement;
-      clone.dataset.clone = 'true';
-      return clone;
-    });
-
-  // Clones de début -> ajoutés à la fin
-  const appendClones = originalSlides
-    .slice(0, cloneCount)
-    .map((slide) => {
-      const clone = slide.cloneNode(true) as HTMLElement;
-      clone.dataset.clone = 'true';
-      return clone;
-    });
-
-  // On ajoute les clones
-  prependClones.reverse().forEach((clone) => {
-    wrapper.prepend(clone);
-  });
-
-  appendClones.forEach((clone) => {
-    wrapper.append(clone);
-  });
-
-  Promise.all([
-    import('swiper'),
-    import('swiper/modules'),
-  ]).then(([{ default: Swiper }, { Navigation }]) => {
-    const swiper = new Swiper(slider, {
-      modules: [Navigation],
-
-      direction: 'vertical',
-
-      slidesPerView: 1.5,
-      centeredSlides: true,
-
-      speed: 1250,
-      allowTouchMove: true,
-
-      // Pas de loop
-      loop: false,
-
-      navigation: {
-        prevEl: prev,
-        nextEl: next,
-      },
-
-      // On commence après les clones du début
-      initialSlide: cloneCount,
-
-      on: {
-        slideChangeTransitionEnd(swiper) {
-          const realSlidesCount = originalSlides.length;
-          const currentIndex = swiper.activeIndex;
-
-          // On est arrivé dans les clones de fin
-          if (currentIndex >= realSlidesCount + cloneCount) {
-            swiper.slideTo(
-              currentIndex - realSlidesCount,
-              0,
-              false
-            );
-          }
-
-          // On est arrivé dans les clones de début
-          else if (currentIndex < cloneCount) {
-            swiper.slideTo(
-              currentIndex + realSlidesCount,
-              0,
-              false
-            );
-          }
-        },
-      },
-    });
-
-    slider.dataset.swiperInitialized = 'true';
-
-    (
-      slider as HTMLElement & {
-        swiper?: Swiper;
+    function buildSwiper(isDesktop: boolean) {
+      // Détruit l'instance précédente proprement
+      if (currentSwiper) {
+        currentSwiper.destroy(true, true);
+        currentSwiper = null;
       }
-    ).swiper = swiper;
-  });
-}
+      clearClones();
 
-function setupObserver() {
-  const sections = document.querySelectorAll<HTMLElement>('.realizations');
+      // Mémorise les slides originales une seule fois
+      if (!originalSlides) {
+        originalSlides = Array.from(
+          wrapper!.querySelectorAll<HTMLElement>('.swiper-slide')
+        );
+      }
 
-  sections.forEach((section) => {
-    const observer = new IntersectionObserver(
-      (entries, obs) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            initRealizationsSlider(section);
-            obs.disconnect();
-          }
+      if (originalSlides.length <= 1) return;
+
+      const cloneCount = Math.min(2, originalSlides.length);
+
+      const prependClones = originalSlides
+        .slice(-cloneCount)
+        .map((slide) => {
+          const clone = slide.cloneNode(true) as HTMLElement;
+          clone.dataset.clone = 'true';
+          return clone;
         });
-      },
-      {
-        rootMargin: '0px',
-      }
-    );
 
-    observer.observe(section);
-  });
-}
+      const appendClones = originalSlides
+        .slice(0, cloneCount)
+        .map((slide) => {
+          const clone = slide.cloneNode(true) as HTMLElement;
+          clone.dataset.clone = 'true';
+          return clone;
+        });
 
-setupObserver();
-document.addEventListener('astro:page-load', setupObserver);
+      prependClones.reverse().forEach((clone) => wrapper!.prepend(clone));
+      appendClones.forEach((clone) => wrapper!.append(clone));
+
+      Promise.all([
+        import('swiper'),
+        import('swiper/modules'),
+      ]).then(([{ default: Swiper }, { Navigation, EffectFade }]) => {
+        currentSwiper = new Swiper(slider!, {
+          modules: [Navigation, EffectFade],
+
+          direction: isDesktop ? 'vertical' : 'horizontal',
+          effect: 'slide',
+
+          slidesPerView: isDesktop ? 1.5 : 1.15,
+          centeredSlides: true,
+          spaceBetween: isDesktop ? 0 : 16,
+
+          speed: 1250,
+          allowTouchMove: true,
+          loop: false,
+
+          navigation: {
+            prevEl: prev,
+            nextEl: next,
+          },
+
+          initialSlide: cloneCount,
+
+          on: {
+            slideChangeTransitionEnd(swiper) {
+              const realSlidesCount = originalSlides!.length;
+              const currentIndex = swiper.activeIndex;
+
+              if (currentIndex >= realSlidesCount + cloneCount) {
+                swiper.slideTo(currentIndex - realSlidesCount, 0, false);
+              } else if (currentIndex < cloneCount) {
+                swiper.slideTo(currentIndex + realSlidesCount, 0, false);
+              }
+            },
+          },
+        });
+
+        (slider as HTMLElement & { swiper?: any }).swiper = currentSwiper;
+      });
+    }
+
+    // Init initiale selon le breakpoint courant
+    buildSwiper(mq.matches);
+
+    // Réinit propre au franchissement du breakpoint
+    mq.addEventListener('change', (e) => buildSwiper(e.matches));
+  }
+
+  function setupObserver() {
+    const sections = document.querySelectorAll<HTMLElement>('.realizations');
+
+    sections.forEach((section) => {
+      const observer = new IntersectionObserver(
+        (entries, obs) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              initRealizationsSlider(section);
+              obs.disconnect();
+            }
+          });
+        },
+        {
+          rootMargin: '0px',
+        }
+      );
+
+      observer.observe(section);
+    });
+  }
+
+  setupObserver();
+  document.addEventListener('astro:page-load', setupObserver);
 </script>

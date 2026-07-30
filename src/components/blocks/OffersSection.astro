@@ -40,7 +40,7 @@ const calUrl = configurationDuThMe?.themeOptions?.calUrl;
 ---
 
 {offers && (
-  <section id="offres" class="py-20 px-4 max-w-6xl mx-auto flex flex-col items-center text-center font-sans bg-white">
+  <section id="offres" class="py-section px-4 max-w-6xl mx-auto flex flex-col items-center text-center font-sans bg-white">
     {/* Titres principaux */}
     {offers.title && (
       <h2 
@@ -74,7 +74,7 @@ const calUrl = configurationDuThMe?.themeOptions?.calUrl;
     )}
 
     {/* Grille des cartes */}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-5xl items-stretch">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full max-w-5xl items-stretch">
       {offers.item?.map((offer, index) => {
         // Détection de la deuxième carte (Site complet) pour appliquer le thème sombre/vert
         const isDark = index === 1;

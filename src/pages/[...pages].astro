@@ -24,7 +24,98 @@ const footerMenuNode = nodeByUri?.footerMenu?.nodes?.[0];
     primaryMenu={primaryMenuNode && isGraphType(primaryMenuNode, 'Menu')? primaryMenuNode: null}
     footerMenu={footerMenuNode && isGraphType(footerMenuNode, 'Menu')? footerMenuNode: null}
     seo={seo}
+    configurationDuThMe={nodeByUri?.configurationDuThMe}
 >
 
-{pageData?.content && ( <main> <article set:html={pageData.content} /> </main>
-)} </BaseLayout>
+{pageData?.content && ( 
+    <main> 
+        <div class="container py-section pt-48">
+            <h1 class="font-semibold text-5xl mb-12 text-neutral-950">{pageData?.title}</h1> 
+            <article class="wp-content" set:html={pageData.content} />
+        </div>
+    </main>
+)} 
+</BaseLayout>
+
+<style>
+    @reference "../styles/global.css";
+
+    .wp-content {
+        @apply text-neutral-700 leading-relaxed max-w-3xl;
+    }
+
+    /* Titres */
+    .wp-content :global(h1) {
+        @apply font-semibold text-4xl md:text-5xl text-neutral-950 mb-6 mt-12 leading-tight;
+    }
+    .wp-content :global(h2) {
+        @apply font-semibold text-3xl md:text-4xl text-neutral-950 mb-5 mt-10 leading-tight;
+    }
+    .wp-content :global(h3) {
+        @apply font-semibold text-2xl md:text-3xl text-neutral-950 mb-4 mt-8;
+    }
+    .wp-content :global(h4) {
+        @apply font-semibold text-xl text-neutral-950 mb-3 mt-6;
+    }
+
+    /* Paragraphes et listes */
+    .wp-content :global(p) {
+        @apply mb-5 text-base md:text-lg text-neutral-600;
+    }
+    .wp-content :global(ul) {
+        @apply list-disc list-outside pl-6 mb-5 space-y-2 text-neutral-600;
+    }
+    .wp-content :global(ol) {
+        @apply list-decimal list-outside pl-6 mb-5 space-y-2 text-neutral-600;
+    }
+    .wp-content :global(li) {
+        @apply text-base md:text-lg;
+    }
+
+    /* Liens */
+    .wp-content :global(a) {
+        @apply text-emerald-600 font-medium underline decoration-emerald-300 underline-offset-2 hover:text-emerald-700 transition-colors;
+    }
+
+    /* Gras / emphase — effet "surlignage coup de cœur" façon capture */
+    .wp-content :global(strong) {
+        @apply font-semibold text-neutral-950;
+    }
+    .wp-content :global(mark) {
+        @apply bg-[#0F2818] text-[#8AEFA8] px-2 py-0.5 rounded-md font-semibold;
+    }
+
+    /* Citations */
+    .wp-content :global(blockquote) {
+        @apply border-l-4 border-emerald-400 bg-emerald-50 pl-6 pr-4 py-4 italic text-neutral-700 rounded-r-xl my-8;
+    }
+
+    /* Images */
+    .wp-content :global(img) {
+        @apply rounded-2xl my-8 w-full h-auto;
+    }
+    .wp-content :global(figcaption) {
+        @apply text-sm text-neutral-500 text-center mt-2;
+    }
+
+    /* Séparateurs */
+    .wp-content :global(hr) {
+        @apply border-neutral-200 my-10;
+    }
+
+    /* Tableaux */
+    .wp-content :global(table) {
+        @apply w-full border-collapse my-8 rounded-xl overflow-hidden border border-neutral-200;
+    }
+    .wp-content :global(th) {
+        @apply bg-neutral-950 text-white text-left px-4 py-3 font-semibold;
+    }
+    .wp-content :global(td) {
+        @apply px-4 py-3 border-t border-neutral-200;
+    }
+
+    /* Boutons/CTA si insérés en HTML brut dans l'éditeur */
+    .wp-content :global(.wp-block-button__link) {
+        @apply inline-flex items-center bg-neutral-950 text-white font-semibold px-6 py-3 rounded-full hover:bg-neutral-800 transition-colors no-underline;
+    }
+</style>

@@ -31,8 +31,12 @@ body {
     @apply font-gsf text-black;
 }
 
+body main {
+    @apply overflow-x-hidden;
+}
+
 .container {
-    @apply mx-auto w-full;
+    @apply mx-auto w-full px-4 sm:px-8 2xl:px-0;
 }
 
 a,

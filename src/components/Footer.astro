@@ -45,14 +45,14 @@ const currentYear = new Date().getFullYear();
             </div>
         </div>
     </div>
-    <LogoSvg class={"site-footer__deco"} width={"110%"} height={300} />
+    <LogoSvg class={"site-footer__deco hidden lg:block"} width={"110%"} height={300} />
 </footer>
 
 <style>
     @reference "../styles/global.css";
 
     .site-footer__row > .container {
-        @apply flex justify-between items-center;
+        @apply flex flex-col lg:flex-row gap-4 justify-between items-center;
     }
 
     .site-footer__row:first-of-type {

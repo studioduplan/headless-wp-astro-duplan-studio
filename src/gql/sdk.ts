@@ -19666,7 +19666,7 @@ export type GetNodeByUriQuery = (
     | { __typename: 'ContentType', isContentNode: boolean, isTermNode: boolean }
     | { __typename: 'Faq', isContentNode: boolean, isTermNode: boolean }
     | { __typename: 'MediaItem', isContentNode: boolean, isTermNode: boolean }
-    | { __typename: 'Page', id: string, title: string | null, uri: string | null, slug: string | null, date: string | null, isContentNode: boolean, isTermNode: boolean, featuredImage: { node: { srcSet: string | null, sourceUrl: string | null, altText: string | null, caption: string | null, title: string | null, mediaDetails: { height: number | null, width: number | null } | null } } | null, seo: PostTypeSeoMetadataFragment | null, editorBlocks: Array<
+    | { __typename: 'Page', id: string, title: string | null, uri: string | null, slug: string | null, date: string | null, content: string | null, isContentNode: boolean, isTermNode: boolean, featuredImage: { node: { srcSet: string | null, sourceUrl: string | null, altText: string | null, caption: string | null, title: string | null, mediaDetails: { height: number | null, width: number | null } | null } } | null, seo: PostTypeSeoMetadataFragment | null, editorBlocks: Array<
         | WpBlocks_CoreAccordion_Fragment
         | WpBlocks_CoreAccordionHeading_Fragment
         | WpBlocks_CoreAccordionItem_Fragment
@@ -20850,6 +20850,7 @@ export const GetNodeByUriDocument = gql`
       uri
       slug
       date
+      content
       featuredImage {
         node {
           srcSet

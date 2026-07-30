@@ -32,14 +32,14 @@ const {
       <div class="marquee-content mr-8 flex shrink-0 gap-x-8">
         {texts.map((item, index) => (
           <div class="flex w-max shrink-0 items-center justify-center whitespace-nowrap">
-            <p
+            <div
               class:list={[
                 "m-0 shrink-0 text-[clamp(5rem,10vw,10rem)] font-semibold leading-none tracking-[-2%]",
                 index % 2 === 1 ? "text-green-medium" : "text-black",
               ]}
             >
               {item.text}
-            </p>
+            </div>
           </div>
         ))}
       </div>
@@ -51,14 +51,14 @@ const {
       >
         {texts.map((item, index) => (
           <div class="flex w-max shrink-0 items-center justify-center whitespace-nowrap">
-            <p
+            <div
               class:list={[
                 "m-0 shrink-0 text-[clamp(5rem,10vw,10rem)] font-semibold leading-none tracking-[-2%]",
                 index % 2 === 1 ? "text-green-medium" : "text-black",
               ]}
             >
               {item.text}
-            </p>
+            </div>
           </div>
         ))}
       </div>

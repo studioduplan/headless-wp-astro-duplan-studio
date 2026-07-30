@@ -1,5 +1,7 @@
 ---
 import ProcessColumn from './ProcessColumn.astro';
+import SvgImage from '@/components/SvgImage.astro';
+import BgCircleGreen from '@/assets/images/bg-circle-green.svg';
 
 interface Props {
   process?: {
@@ -14,7 +16,8 @@ const { process } = Astro.props;
 ---
 
 {process && (
-  <section id="processus" class="process py-section">
+  <section id="processus" class="process relative py-section">
+    <SvgImage class:list={"site-header__bg-circle-green absolute pointer-events-none top-1/2 -right-118.75 -translate-y-1/2 z-[-1]"} src={BgCircleGreen} alt="Bg Circle Green" width="950" height="950" />
     <div class="container">
       {process.title && (
         <h2
@@ -43,7 +46,7 @@ const { process } = Astro.props;
       )}
 
       {process.textarea && (
-        <div class="mx-auto mt-5 max-w-[850px] text-center text-[clamp(0.9rem,1.2vw,1.1rem)] font-normal leading-[1.5] tracking-[-0.02em] text-black/60">
+        <div class="mx-auto mt-5 max-w-212.5 text-center text-[clamp(0.9rem,1.2vw,1.1rem)] font-normal leading-normal tracking-[-0.02em] text-black/60">
           {process.textarea}
         </div>
       )}
@@ -66,7 +69,7 @@ const { process } = Astro.props;
         <!-- Colonne droite décalée -->
         <div
           data-process-column="right"
-          class="flex flex-col gap-4 will-change-transform lg:pt-[155px]"
+          class="flex flex-col gap-4 will-change-transform lg:pt-38.75"
         >
           <ProcessColumn
             items={process.column2}
@@ -98,81 +101,68 @@ const { process } = Astro.props;
 
     if (!leftColumn || !rightColumn) return;
 
+    const mm = gsap.matchMedia();
+
     let timeline: gsap.core.Timeline | null = null;
 
-    const createAnimation = () => {
-      // Évite de créer plusieurs animations
-      if (timeline) return;
+    mm.add('(min-width: 1025px)', () => {
+      const createAnimation = () => {
+        if (timeline) return;
 
-      timeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: section,
-          start: 'top bottom',
-          end: 'bottom top',
-          scrub: 1,
+        timeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1,
+          },
+        });
+
+        timeline
+          .fromTo(
+            leftColumn,
+            { y: -30 },
+            { y: 60, ease: 'none' },
+            0
+          )
+          .fromTo(
+            rightColumn,
+            { y: 30 },
+            { y: -60, ease: 'none' },
+            0
+          );
+      };
+
+      const destroyAnimation = () => {
+        if (!timeline) return;
+        timeline.scrollTrigger?.kill();
+        timeline.kill();
+        timeline = null;
+        gsap.set([leftColumn, rightColumn], { clearProps: 'transform' });
+      };
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            createAnimation();
+          } else {
+            destroyAnimation();
+          }
         },
-      });
+        { threshold: 0 }
+      );
 
-      timeline
-        .fromTo(
-          leftColumn,
-          {
-            y: -30,
-          },
-          {
-            y: 60,
-            ease: 'none',
-          },
-          0
-        )
-        .fromTo(
-          rightColumn,
-          {
-            y: 30,
-          },
-          {
-            y: -60,
-            ease: 'none',
-          },
-          0
-        );
-    };
+      observer.observe(section);
 
-    const destroyAnimation = () => {
-      if (!timeline) return;
-
-      // Détruit le ScrollTrigger
-      timeline.scrollTrigger?.kill();
-
-      // Détruit la timeline
-      timeline.kill();
-
-      timeline = null;
-
-      // Reset des transforms
-      gsap.set([leftColumn, rightColumn], {
-        clearProps: 'transform',
-      });
-    };
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          createAnimation();
-        } else {
-          destroyAnimation();
-        }
-      },
-      {
-        threshold: 0,
-      }
-    );
-
-    observer.observe(section);
+      // Cleanup GSAP matchMedia : appelé automatiquement quand on repasse sous 1025px
+      return () => {
+        observer.disconnect();
+        destroyAnimation();
+      };
+    });
 
     return () => {
-      observer.disconnect();
-      destroyAnimation();
+      mm.revert();
     };
   };
 

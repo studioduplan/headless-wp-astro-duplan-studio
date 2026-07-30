@@ -24,7 +24,7 @@ const rightColumnItems = nodes.filter((_, index) => index % 2 !== 0);
 ---
 
 {faq && (
-  <section class="py-20 px-4 max-w-6xl mx-auto flex flex-col items-center text-center font-sans bg-white">
+  <section class="py-section px-4 max-w-6xl mx-auto flex flex-col items-center text-center font-sans bg-white">
     {/* Titre de la FAQ */}
     {faq.title && (
       <h2 
@@ -39,13 +39,14 @@ const rightColumnItems = nodes.filter((_, index) => index % 2 !== 0);
             [&_strong]:before:top-1/2
             [&_strong]:before:-translate-y-1/2
             [&_strong]:before:-left-2
-            [&_strong]:before:w-[calc(100%+20px)]
+            [&_strong]:before:w-[calc(100%+16px)]
+            xl:[&_strong]:before:w-[calc(100%+20px)]
             [&_strong]:before:h-[calc(100%+8px)]
             [&_strong]:before:rounded-md
             [&_strong]:before:bg-green-dark
             [&_strong:first-of-type::before]:mt-1
             [&_strong:first-of-type::before]:-rotate-1
-            mx-auto max-w-260 text-center text-balance text-[clamp(2rem,3vw,3rem)] font-medium leading-tight tracking-[-0.04em]" 
+            mx-auto max-w-150 xl:max-w-260 text-center text-balance text-[clamp(2rem,3vw,3rem)] font-medium leading-tight tracking-[-0.04em]" 
         set:html={faq.title} 
       />
     )}

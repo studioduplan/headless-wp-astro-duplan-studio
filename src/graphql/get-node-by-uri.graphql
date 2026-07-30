@@ -222,6 +222,7 @@ query GetNodeByURI($uri: String!, $categoryName: String, $first: Int, $last: Int
             uri
             slug
             date
+            content
             featuredImage {
                 node {
                     srcSet

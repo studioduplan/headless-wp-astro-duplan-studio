@@ -10,15 +10,14 @@ const { menu } = Astro.props as Props
 const { menuItems } = menu ?? {}
 ---
 
-<nav>
-    <div class="container">
+<nav class="ps-6">
         <button
-            class="menu-toggle w-8 h-8 -ml-1 flex items-center justify-center relative z-30 md:hidden"
+            class="menu-toggle w-8 h-8 -ml-1 flex items-center justify-center relative z-30 lg:hidden"
             aria-label="Open Menu"
             aria-expanded="false"
             aria-controls="menu-items"
         >
-            <span class="menu-toggle-icon w-6 h-px relative bg-current" />
+            <span class="menu-toggle-icon w-6 h-0.5 relative bg-current" />
         </button>
         <ul class="menu flex gap-x-8">
             {menuItems?.nodes.map((link) => (
@@ -32,39 +31,34 @@ const { menuItems } = menu ?? {}
                 </li>
             ))}
         </ul>
-    </div>
-
-    {/*<div class="absolute right-0 top-4 z-10 md:top-8">
-         <ThemeToggle /> 
-    </div>*/}
 </nav>
 
 <style>
     @reference "../styles/global.css";
 
-    @media (max-width: 767px) {
+    @media (max-width: 1025px) {
         .menu {
-            @apply flex-col gap-1 absolute -top-2.5 -left-2.5 max-w-64 px-3 pt-16 pb-10 z-20 border border-dashed  invisible opacity-0;
+            @apply flex-col gap-1 absolute top-22 bg-green-bis right-0 max-w-64 px-3 py-6 z-20 border border-dashed  invisible opacity-0;
             width: calc(100% + 1.25rem);
         }
         .menu.is-visible {
             @apply visible opacity-100;
-            transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
+            transition: opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1) 0.08s;
         }
         .menu-toggle-icon {
-            transition: width 0.1s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+            transition: width 0.06s cubic-bezier(0.4, 0, 0.2, 1) 0.12s;
         }
         .menu-toggle.is-active .menu-toggle-icon {
             @apply w-0;
-            transition: width 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.06s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .menu-toggle-icon:before,
         .menu-toggle-icon:after {
-            @apply w-6 h-px absolute left-1/2 top-0 origin-center -translate-x-1/2 bg-current;
+            @apply w-6 h-0.5 absolute left-1/2 top-0 origin-center -translate-x-1/2 bg-current;
             content: '';
             transition:
-                transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-                margin 0.2s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
+                transform 0.12s cubic-bezier(0.4, 0, 0.2, 1),
+                margin 0.12s cubic-bezier(0.4, 0, 0.2, 1) 0.08s;
         }
         .menu-toggle-icon:before {
             @apply -mt-1.5;
@@ -76,8 +70,8 @@ const { menuItems } = menu ?? {}
         .menu-toggle.is-active .menu-toggle-icon:after {
             @apply mt-0;
             transition:
-                margin 0.2s cubic-bezier(0.4, 0, 0.2, 1) 0.1s,
-                transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+                margin 0.12s cubic-bezier(0.4, 0, 0.2, 1) 0.04s,
+                transform 0.12s cubic-bezier(0.4, 0, 0.2, 1) 0.12s;
         }
         .menu-toggle.is-active .menu-toggle-icon:before {
             @apply rotate-45;

@@ -56,8 +56,8 @@ const itemsWithDimensions = await Promise.all(
 ---
 
 {hero && (
-  <section class="hero h-screen mb-28">
-    <div class="container h-full flex flex-col justify-center items-center pt-20">
+  <section class="hero sm:h-screen mb-28">
+    <div class="container h-full flex flex-col justify-center items-center pt-40 lg:pt-60 xl:pt-20">
       {/* Badge / Réassurance */}
       {hero.reinsurance && (
         <div
@@ -91,10 +91,11 @@ const itemsWithDimensions = await Promise.all(
             text-center
             font-semibold
             tracking-[-2%]
-            leading-21.25
-            text-black text-[80px]
-
+            leading-normal
+            lg:leading-21.25
+            text-black text-2xl sm:text-4xl lg:text-6xl xl:text-[80px]
             [&_strong]:relative
+            [&_strong]:mx-2
             [&_strong]:z-0
             [&_strong]:font-semibold
             [&_strong]:isolate
@@ -106,7 +107,8 @@ const itemsWithDimensions = await Promise.all(
             [&_strong]:before:top-1/2
             [&_strong]:before:-translate-y-1/2
             [&_strong]:before:-left-1.75
-            [&_strong]:before:w-[calc(100%+20px)]
+            [&_strong]:before:w-[calc(100%+16px)]
+            lg:[&_strong]:before:w-[calc(100%+20px)]
             [&_strong]:before:h-[calc(100%+8px)]
             [&_strong]:before:rounded-md
             [&_strong]:before:bg-green-dark
@@ -162,7 +164,7 @@ const itemsWithDimensions = await Promise.all(
         />
       )}
       {logos && (
-        <ul class="mt-10 flex items-center justify-center gap-8">
+        <ul class="mt-10 flex flex-wrap items-center justify-center gap-8">
           {itemsWithDimensions.map((item, index) => (
             <li>
               <img
