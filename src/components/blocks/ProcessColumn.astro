@@ -1,5 +1,6 @@
 ---
 import { getSvgDimensions } from '@/utils/svg-dimensions';
+import { getLocalImage } from '@/utils/image.js';
 
 interface ColumnItem {
   title?: string;
@@ -27,16 +28,28 @@ const {
 const itemsWithDimensions = await Promise.all(
   (items ?? []).map(async (col) => {
     const sourceUrl = col.image?.node?.sourceUrl;
-    const isSvg = sourceUrl?.endsWith('.svg');
 
-    const dimensions = isSvg && sourceUrl
-  ? await getSvgDimensions(sourceUrl)
-  : {
-      width: col.image?.node?.mediaDetails?.width,
-      height: col.image?.node?.mediaDetails?.height,
+    const localImage = sourceUrl
+      ? getLocalImage(sourceUrl)
+      : undefined;
+
+    const isSvg = localImage
+      ?.toLowerCase()
+      .endsWith('.svg');
+
+    const dimensions =
+      isSvg && localImage
+        ? await getSvgDimensions(localImage)
+        : {
+            width: col.image?.node?.mediaDetails?.width,
+            height: col.image?.node?.mediaDetails?.height,
+          };
+
+    return {
+      ...col,
+      localImage,
+      dimensions,
     };
-
-    return { ...col, dimensions };
   })
 );
 ---
@@ -64,7 +77,7 @@ const itemsWithDimensions = await Promise.all(
     {col.image?.node && (
       <div class="mt-7 overflow-hidden rounded-3xl border border-black/10 bg-white">
         <img
-          src={col.image.node.sourceUrl}
+          src={col.localImage}
           alt={col.image.node.altText ?? col.title ?? ''}
           width={col.dimensions?.width}
           height={col.dimensions?.height}

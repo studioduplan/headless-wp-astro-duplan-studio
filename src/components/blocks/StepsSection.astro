@@ -1,5 +1,6 @@
 ---
 import Button from '@/components/Button.astro';
+import { getLocalImage } from '@/utils/image.js';
 import { getSvgDimensions } from '@/utils/svg-dimensions';
 import SvgImage from '@/components/SvgImage.astro';
 import BgCircleGreen from '@/assets/images/bg-circle-green.svg';
@@ -36,16 +37,28 @@ const calUrl = configurationDuThMe?.themeOptions?.calUrl;
 const itemsWithDimensions = await Promise.all(
   (steps?.item ?? []).map(async (step) => {
     const sourceUrl = step.image?.node?.sourceUrl;
-    const isSvg = sourceUrl?.endsWith('.svg');
 
-    const dimensions = isSvg && sourceUrl
-  ? await getSvgDimensions(sourceUrl)
-  : {
-      width: step.image?.node?.mediaDetails?.width,
-      height: step.image?.node?.mediaDetails?.height,
+    const localImage = sourceUrl
+      ? getLocalImage(sourceUrl)
+      : undefined;
+
+    const isSvg = localImage
+      ?.toLowerCase()
+      .endsWith('.svg');
+
+    const dimensions =
+      isSvg && localImage
+        ? await getSvgDimensions(localImage)
+        : {
+            width: step.image?.node?.mediaDetails?.width,
+            height: step.image?.node?.mediaDetails?.height,
+          };
+
+    return {
+      ...step,
+      localImage,
+      dimensions,
     };
-
-    return { ...step, dimensions };
   })
 );
 ---
@@ -140,7 +153,7 @@ const itemsWithDimensions = await Promise.all(
                   "
                 >
                   <img
-                    src={step.image.node.sourceUrl}
+                    src={step.localImage}
                     alt={step.image.node.altText ?? ''}
                     width={step.dimensions?.width}
                     height={step.dimensions?.height}

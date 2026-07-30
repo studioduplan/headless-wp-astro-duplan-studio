@@ -1,8 +1,16 @@
 ---
 
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { getNodeByUri } from '@/lib/api';
+import { getNodeByUri, getAllUris } from '@/lib/api';
 import { isGraphType } from '@/utils/types';
+
+export async function getStaticPaths() {
+    const uris = await getAllUris();
+
+    return uris.map((uri) => ({
+        params: { pages: uri.replace(/^\/|\/$/g, '') },
+    }));
+}
 
 const nodeByUri = await getNodeByUri({
 uri: Astro.url.pathname,

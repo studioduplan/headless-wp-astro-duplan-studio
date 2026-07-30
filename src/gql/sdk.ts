@@ -19637,6 +19637,20 @@ export type YoastSeoBreadcrumbsAttributes = {
   style?: Maybe<Scalars['BlockAttributesObject']['output']>;
 };
 
+export type GetAllUrisQueryVariables = Exact<{
+  first?: number | null | undefined;
+  after?: string | null | undefined;
+}>;
+
+
+export type GetAllUrisQuery = { contentNodes: { nodes: Array<
+      | { uri: string | null }
+      | { uri: string | null }
+      | { uri: string | null }
+      | { uri: string | null }
+      | { uri: string | null }
+    >, pageInfo: { hasNextPage: boolean, endCursor: string | null } } | null };
+
 export type AcfImageFieldsFragment = { id: string, srcSet: string | null, sourceUrl: string | null, altText: string | null, caption: string | null, title: string | null, mediaDetails: { height: number | null, width: number | null } | null };
 
 export type HomeContentFieldsFragment = { hero: { reinsurance: string | null, title: string | null, richText: string | null, button: string | null, richText2: string | null } | null, texts: Array<{ text: string | null } | null> | null, texts2: Array<{ text: string | null } | null> | null, process: { title: string | null, textarea: string | null, column1: Array<{ title: string | null, textarea: string | null, image: { node: AcfImageFieldsFragment } | null } | null> | null, column2: Array<{ title: string | null, textarea: string | null, image: { node: AcfImageFieldsFragment } | null } | null> | null } | null, steps: { title: string | null, textarea: string | null, button: string | null, item: Array<{ stepTitle: string | null, title: string | null, textarea: string | null, image: { node: AcfImageFieldsFragment } | null } | null> | null } | null, realizations: { reinsurance: string | null, title: string | null, textarea: string | null, button: string | null, items: { nodes: Array<
@@ -20779,6 +20793,23 @@ export const GeneralSettingsFragmentDoc = gql`
   }
 }
     ${AcfImageFieldsFragmentDoc}`;
+export const GetAllUrisDocument = gql`
+    query GetAllUris($first: Int = 100, $after: String) {
+  contentNodes(
+    first: $first
+    after: $after
+    where: {contentTypes: [POST, PAGE], status: PUBLISH}
+  ) {
+    nodes {
+      uri
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+    `;
 export const GetNodeByUriDocument = gql`
     query GetNodeByURI($uri: String!, $categoryName: String, $first: Int, $last: Int, $after: String, $before: String) {
   nodeByUri(uri: $uri) {
@@ -21143,6 +21174,9 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
+    GetAllUris(variables?: GetAllUrisQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetAllUrisQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetAllUrisQuery>({ document: GetAllUrisDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetAllUris', 'query', variables);
+    },
     GetNodeByURI(variables: GetNodeByUriQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetNodeByUriQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<GetNodeByUriQuery>({ document: GetNodeByUriDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'GetNodeByURI', 'query', variables);
     },

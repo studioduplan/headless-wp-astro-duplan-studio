@@ -1,5 +1,6 @@
 ---
 import { getSvgDimensions } from '@/utils/svg-dimensions';
+import { getLocalImage } from '@/utils/image.js';
 import Button from '@/components/Button.astro';
 import SvgImage from '@/components/SvgImage.astro';
 import Stars from '@/assets/images/icon-stars.svg';
@@ -76,24 +77,32 @@ const itemsWithDimensions = await Promise.all(
     const featuredImageUrl = item.featuredImage?.node?.sourceUrl;
     const logoUrl = item.realizationContent?.logo?.node?.sourceUrl;
 
-    const featuredImageIsSvg = featuredImageUrl
-      ?.toLowerCase()
-      .endsWith('.svg');
+    const featuredImageLocal = featuredImageUrl
+      ? getLocalImage(featuredImageUrl)
+      : undefined;
 
-    const logoIsSvg = logoUrl
+    const logoLocal = logoUrl
+      ? getLocalImage(logoUrl)
+      : undefined;
+
+    const featuredImageIsSvg = featuredImageLocal
       ?.toLowerCase()
-      .endsWith('.svg');
+      .endsWith(".svg");
+
+    const logoIsSvg = logoLocal
+      ?.toLowerCase()
+      .endsWith(".svg");
 
     const [featuredImageDimensions, logoDimensions] = await Promise.all([
-      featuredImageIsSvg && featuredImageUrl
-        ? getSvgDimensions(featuredImageUrl)
+      featuredImageIsSvg && featuredImageLocal
+        ? getSvgDimensions(featuredImageLocal)
         : {
             width: item.featuredImage?.node?.mediaDetails?.width,
             height: item.featuredImage?.node?.mediaDetails?.height,
           },
 
-      logoIsSvg && logoUrl
-        ? getSvgDimensions(logoUrl)
+      logoIsSvg && logoLocal
+        ? getSvgDimensions(logoLocal)
         : {
             width: item.realizationContent?.logo?.node?.mediaDetails?.width,
             height: item.realizationContent?.logo?.node?.mediaDetails?.height,
@@ -102,6 +111,8 @@ const itemsWithDimensions = await Promise.all(
 
     return {
       ...item,
+      featuredImageLocal,
+      logoLocal,
       dimensions: {
         featuredImage: featuredImageDimensions,
         logo: logoDimensions,
@@ -243,7 +254,7 @@ const itemsWithDimensions = await Promise.all(
                         "
                       >
   <img
-  src={item.featuredImage?.node?.sourceUrl}
+  src={item.featuredImageLocal}
   alt={item.featuredImage?.node?.altText ?? item.title ?? ''}
   width={item.dimensions.featuredImage?.width}
   height={item.dimensions.featuredImage?.height}
@@ -257,7 +268,7 @@ const itemsWithDimensions = await Promise.all(
                     <div class="realization-card-content mx-auto w-full max-w-full xl:max-w-110">
                       {item.realizationContent?.logo?.node && (
                         <img
-  src={item.realizationContent.logo.node.sourceUrl}
+src={item.logoLocal}
   alt={item.title ?? ''}
   width={item.dimensions.logo?.width}
   height={item.dimensions.logo?.height}

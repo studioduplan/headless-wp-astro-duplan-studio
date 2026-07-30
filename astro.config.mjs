@@ -6,7 +6,7 @@ import node from '@astrojs/node';
 
 // https://astro.build/config
 export default defineConfig({
-    site: process.env.VERCEL_ENV === 'production' ? 'https://duplan.studio' : 'http://localhost:4321',
+    site: 'https://duplan.studio',
 
     vite: {
         plugins: [tailwindcss()]
@@ -20,7 +20,7 @@ export default defineConfig({
         })
     ],
 
-    output: 'server',
+    output: 'static',
 
     adapter: node({
         mode: 'standalone'

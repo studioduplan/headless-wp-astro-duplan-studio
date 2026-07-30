@@ -1,7 +1,9 @@
 dev:
 	bun install && bun run dev
+prebuild:
+	bun install && bun run prebuild
 prod:
-	bun install && bun run build
+	bun install && bun run prebuild && bun run build
 preview:
 	bun install && bun run preview
 g:

@@ -1,0 +1,11 @@
+query GetAllUris($first: Int = 100, $after: String) {
+    contentNodes(first: $first, after: $after, where: { contentTypes: [POST, PAGE], status: PUBLISH }) {
+        nodes {
+            uri
+        }
+        pageInfo {
+            hasNextPage
+            endCursor
+        }
+    }
+}

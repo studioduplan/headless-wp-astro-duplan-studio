@@ -66,3 +66,20 @@ export const getJWTToken = async (): Promise<{
         return { error: 'Unknown error' };
     }
 };
+
+export const getAllUris = async (): Promise<string[]> => {
+    const uris: string[] = [];
+    let after: string | null = null;
+    let hasNextPage = true;
+
+    while (hasNextPage) {
+        const result = await sdk.GetAllUris({ first: 100, after });
+        const nodes = result.contentNodes?.nodes ?? [];
+        uris.push(...nodes.map((n) => n?.uri).filter((u): u is string => Boolean(u)));
+
+        hasNextPage = result.contentNodes?.pageInfo?.hasNextPage ?? false;
+        after = result.contentNodes?.pageInfo?.endCursor ?? null;
+    }
+
+    return uris;
+};

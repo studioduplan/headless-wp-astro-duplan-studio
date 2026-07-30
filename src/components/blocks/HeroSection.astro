@@ -1,5 +1,6 @@
 ---
 import { getSvgDimensions } from '@/utils/svg-dimensions';
+import { getLocalImage, getLocalImagePath } from "@/utils/image";
 import SvgImage from '@/components/SvgImage.astro';
 import Flash from '@/assets/images/icon-flash.svg';
 import Button from '@/components/Button.astro';
@@ -43,12 +44,13 @@ const itemsWithDimensions = await Promise.all(
     const sourceUrl = item.logo?.node?.sourceUrl;
     const isSvg = sourceUrl?.endsWith('.svg');
 
-    const dimensions = isSvg && sourceUrl
-      ? await getSvgDimensions(sourceUrl)
-      : {
-          width: item.logo?.node?.mediaDetails?.width,
-          height: item.logo?.node?.mediaDetails?.height,
-        };
+   const dimensions =
+  isSvg && sourceUrl
+    ? await getSvgDimensions(getLocalImagePath(sourceUrl))
+    : {
+        width: item.logo?.node?.mediaDetails?.width,
+        height: item.logo?.node?.mediaDetails?.height,
+      };
 
     return { ...item, dimensions };
   })
@@ -164,21 +166,21 @@ const itemsWithDimensions = await Promise.all(
         />
       )}
       {logos && (
-        <ul class="mt-10 flex flex-wrap items-center justify-center gap-8">
-          {itemsWithDimensions.map((item, index) => (
-            <li>
-              <img
-                src={item.logo?.node?.sourceUrl}
-                alt={item.logo?.node?.altText || ''}
-                width={item.dimensions?.width}
-                height={item.dimensions?.height}
-                loading={index === 0 ? 'eager' : 'lazy'}
-                fetchpriority={index === 0 ? 'high' : 'auto'}
-              />
-            </li>
-          ))}
-        </ul>
-      )}
+  <ul class="mt-10 flex flex-wrap items-center justify-center gap-8">
+    {itemsWithDimensions.map((item, index) => (
+      <li>
+        <img
+          src={getLocalImage(item.logo?.node?.sourceUrl)}
+          alt={item.logo?.node?.altText || ''}
+          width={item.dimensions?.width}
+          height={item.dimensions?.height}
+          loading={index === 0 ? 'eager' : 'lazy'}
+          fetchpriority={index === 0 ? 'high' : 'auto'}
+        />
+      </li>
+    ))}
+  </ul>
+)}
     </div>
   </section>
 )}
