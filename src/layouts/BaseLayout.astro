@@ -15,6 +15,8 @@ import '@fontsource/google-sans-flex/latin-600.css';
 import 'swiper/css';
 import '@/styles/global.css';
 
+import CookieConsent from "@/components/CookieConsent.astro";
+
 export type Props = {
   base: string,
   primaryMenu?: Menu | null,
@@ -63,12 +65,23 @@ const {
         <Seo seo={seo} baseUrl="https://duplan.studio" />
         
         <ClientRouter />
+
+        <!-- Google tag (gtag.js) -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id=G-8HR299NFC4"></script>
+            <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-8HR299NFC4');
+        </script>
     </head>
     <body>
         <Header seoTitle={seoTitle} primaryMenu={primaryMenu} configurationDuThMe={configurationDuThMe} />
         <main>
             <SvgImage class:list={"site-header__bg-circle-green absolute pointer-events-none -top-118.75 left-1/2 -translate-x-1/2 z-[-1]"} src={BgCircleGreen} alt="Bg Circle Green" width="950" height="950" />
             <slot />
+            <CookieConsent />
         </main>
         <Footer seo={seo} seoTitle={seoTitle} primaryMenu={primaryMenu} footerMenu={footerMenu} />
     </body>

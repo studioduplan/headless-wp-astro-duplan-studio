@@ -1,0 +1,662 @@
+/* ============================================
+   TARTEAUCITRON
+   Structure générale
+   ============================================ */
+
+@reference "./theme.css";
+
+/* Overlay */
+#tarteaucitronRoot {
+    @apply fixed inset-0 z-[9999] font-gsf;
+}
+
+#tac_title {
+    @apply hidden;
+}
+
+#tarteaucitronBack {
+    @apply fixed inset-0
+    bg-black-bis/50
+    backdrop-blur-md
+    opacity-0
+    animate-[tacFade_.5s_var(--ease-smooth)_forwards];
+}
+
+/* Fenêtre principale */
+#tarteaucitron {
+    @apply fixed
+    !left-1/2
+    !top-1/2
+
+    !-translate-x-1/2
+    !-translate-y-1/2
+
+    w-[92vw]
+    max-w-2xl
+    max-h-[60vh]
+
+    flex
+    flex-col
+
+    overflow-hidden
+
+    rounded-[28px]
+
+    bg-gray
+
+    shadow-[0_40px_100px_-20px_rgba(1,14,10,.35)]
+
+    opacity-0
+    scale-[.96]
+    animate-[tacPop_.5s_var(--ease-smooth)_forwards];
+}
+
+@keyframes tacFade {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes tacPop {
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* Bouton fermer (croix) */
+#tarteaucitronClosePanel {
+    @apply w-full
+
+    bg-green-bis
+    py-3.5
+
+    text-sm
+    font-semibold
+    text-black
+
+    transition-all
+    duration-300
+    ease-smooth
+
+    hover:bg-black-bis
+    hover:text-white
+
+    active:scale-[0.99];
+}
+
+/* Header */
+
+.tarteaucitronMainLine {
+    @apply relative
+    px-9
+    pt-10
+    pb-8
+
+    bg-green-dark;
+}
+
+.tarteaucitronH1,
+#dialogTitle {
+    @apply block
+    text-[26px]
+    font-semibold
+    tracking-tight
+    leading-tight
+    text-white;
+}
+
+#tarteaucitronInfo {
+    @apply mt-3
+    text-[15px]
+    leading-relaxed
+    text-white/70
+    max-w-lg;
+}
+
+#tarteaucitronPrivacyUrlDialog {
+    @apply inline-block
+    mt-1
+    text-[15px]
+
+    text-green-bis
+
+    underline
+    underline-offset-4
+    decoration-green-bis/40
+
+    transition-colors
+    duration-300
+    ease-smooth
+
+    hover:decoration-green-bis;
+}
+
+.tarteaucitronName .tarteaucitronH2 {
+    @apply block
+    mt-6
+    mb-4
+
+    text-xs
+    font-semibold
+    uppercase
+    tracking-[.12em]
+
+    text-white/50;
+}
+
+/* Zone boutons génériques (tout accepter / tout refuser) */
+
+.tarteaucitronAsk {
+    @apply flex
+    flex-wrap
+    gap-3;
+}
+
+/* Bouton principal (Autoriser / Tout accepter) */
+
+.tarteaucitronAllow {
+    @apply inline-flex
+    items-center
+    justify-center
+    gap-2
+
+    rounded-full
+
+    bg-green-bis
+
+    text-green-dark
+
+    text-sm
+    font-semibold
+
+    px-6
+    py-3
+
+    transition-all
+    duration-300
+    ease-smooth
+
+    hover:brightness-95
+    hover:scale-[1.02]
+
+    active:scale-[0.98]
+
+    disabled:opacity-40
+    disabled:pointer-events-none;
+}
+
+.tarteaucitronAllow .tarteaucitronCheck {
+    @apply w-1.5
+    h-1.5
+    rounded-full
+    bg-green-dark;
+}
+
+/* Bouton secondaire (Refuser / Interdire) */
+
+.tarteaucitronDeny {
+    @apply inline-flex
+    items-center
+    justify-center
+    gap-2
+
+    rounded-full
+
+    border
+    border-white/20
+
+    bg-transparent
+
+    text-white
+
+    text-sm
+    font-medium
+
+    px-6
+    py-3
+
+    transition-all
+    duration-300
+    ease-smooth
+
+    hover:bg-white/10
+    hover:border-white/30
+
+    disabled:opacity-40
+    disabled:pointer-events-none;
+}
+
+.tarteaucitronDeny .tarteaucitronCross {
+    @apply hidden;
+}
+
+/* Dans la liste des services, on garde des boutons plus discrets */
+#tarteaucitronServices_mandatory .tarteaucitronAllow,
+#tarteaucitronServices_analytic .tarteaucitronAllow,
+#tarteaucitronServices_api .tarteaucitronAllow,
+#tarteaucitronServices_other .tarteaucitronAllow,
+#tarteaucitronServices_ads .tarteaucitronAllow,
+#tarteaucitronServices_social .tarteaucitronAllow,
+#tarteaucitronServices_video .tarteaucitronAllow,
+#tarteaucitronServices_support .tarteaucitronAllow,
+#tarteaucitronServices_comment .tarteaucitronAllow,
+#tarteaucitronServices_google .tarteaucitronAllow {
+    @apply bg-green-light
+    text-green-dark
+    px-4
+    py-2
+    text-xs;
+}
+
+#tarteaucitronServices_mandatory .tarteaucitronDeny,
+#tarteaucitronServices_analytic .tarteaucitronDeny,
+#tarteaucitronServices_api .tarteaucitronDeny,
+#tarteaucitronServices_other .tarteaucitronDeny,
+#tarteaucitronServices_ads .tarteaucitronDeny,
+#tarteaucitronServices_social .tarteaucitronDeny,
+#tarteaucitronServices_video .tarteaucitronDeny,
+#tarteaucitronServices_support .tarteaucitronDeny,
+#tarteaucitronServices_comment .tarteaucitronDeny,
+#tarteaucitronServices_google .tarteaucitronDeny {
+    @apply border-neutral-200
+    text-gray-ter
+    px-4
+    py-2
+    text-xs
+    hover:bg-neutral-100
+    hover:text-black-bis;
+}
+
+/* Corps scrollable (catégories + services) */
+
+#tarteaucitronServices {
+    @apply flex-1
+    overflow-y-auto
+
+    px-9
+    py-6
+
+    [&::-webkit-scrollbar]:w-1.5
+    [&::-webkit-scrollbar-track]:bg-transparent
+    [&::-webkit-scrollbar-thumb]:rounded-full
+    [&::-webkit-scrollbar-thumb]:bg-gray-ter/50;
+}
+
+.tarteaucitronBorder {
+    @apply flex
+    flex-col
+    gap-2;
+}
+
+/* Titre de catégorie (accordéon) */
+
+.tarteaucitronTitle {
+    @apply rounded-2xl
+    overflow-hidden
+    bg-white;
+}
+
+.tarteaucitronTitle button,
+.catToggleBtn {
+    @apply w-full
+    flex
+    items-center
+    gap-3
+
+    px-5
+    py-4
+
+    text-left
+
+    text-[15px]
+    font-medium
+    text-black-bis
+
+    transition-colors
+    duration-300
+    ease-smooth
+
+    hover:bg-green-light;
+}
+
+.tarteaucitronPlus {
+    @apply relative
+    inline-flex
+    items-center
+    justify-center
+
+    w-5
+    h-5
+    shrink-0
+
+    rounded-full
+
+    bg-green-light
+
+    text-green-dark
+
+    transition-transform
+    duration-300
+    ease-smooth;
+}
+
+.catToggleBtn[aria-expanded='true'] .tarteaucitronPlus {
+    @apply rotate-45
+    bg-green-dark
+    text-white;
+}
+
+.tarteaucitronDetails,
+.tarteaucitronInfoBox {
+    @apply px-5
+    pb-4
+    -mt-1
+
+    text-sm
+    leading-relaxed
+    text-gray-ter;
+}
+
+/* Une ligne de service individuel */
+
+.tarteaucitronLine:not(.tarteaucitronMainLine) {
+    @apply flex
+    items-center
+    justify-between
+    gap-4
+    flex-wrap
+
+    rounded-2xl
+
+    bg-white
+
+    px-5
+    py-4
+
+    transition-colors
+    duration-300
+    ease-smooth
+
+    hover:bg-green-light/40;
+}
+
+#tarteaucitronServices_mandatory .tarteaucitronLine,
+#tarteaucitronServices_analytic li.tarteaucitronLine,
+#tarteaucitronServices_api li.tarteaucitronLine,
+#tarteaucitronServices_other li.tarteaucitronLine,
+#tarteaucitronServices_ads li.tarteaucitronLine,
+#tarteaucitronServices_social li.tarteaucitronLine,
+#tarteaucitronServices_video li.tarteaucitronLine,
+#tarteaucitronServices_support li.tarteaucitronLine,
+#tarteaucitronServices_comment li.tarteaucitronLine,
+#tarteaucitronServices_google li.tarteaucitronLine {
+    @apply mb-2;
+}
+
+.tarteaucitronName {
+    @apply flex
+    flex-col
+    gap-1.5
+    max-w-sm;
+}
+
+.tarteaucitronH3 {
+    @apply text-sm
+    font-semibold
+    text-black-bis;
+}
+
+.tarteaucitronStatusInfo {
+    @apply flex
+    items-center
+    gap-1.5
+
+    text-xs
+    text-gray-ter;
+}
+
+.tacCurrentStatus {
+    @apply inline-flex
+    items-center
+
+    rounded-full
+
+    px-2.5
+    py-0.5
+
+    text-[11px]
+    font-semibold
+    uppercase
+    tracking-wide
+
+    bg-neutral-100
+    text-gray-ter;
+}
+
+.tarteaucitronReadmoreSeparator {
+    @apply text-gray-ter/50;
+}
+
+.tarteaucitronReadmoreInfo,
+.tarteaucitronReadmoreOfficial {
+    @apply text-xs
+    text-green-medium
+
+    underline
+    underline-offset-2
+    decoration-green-medium/30
+
+    transition-colors
+    duration-300
+    ease-smooth
+
+    hover:text-green-dark
+    hover:decoration-green-dark;
+}
+
+.tarteaucitronListCookies {
+    @apply text-xs
+    text-gray-ter;
+}
+
+.tarteaucitronSelfLink {
+    @apply mt-6
+    flex
+    justify-center
+    opacity-30
+
+    transition-opacity
+    duration-300
+    ease-smooth
+
+    hover:opacity-60;
+}
+
+.tarteaucitronSelfLink img {
+    @apply h-4
+    w-auto;
+}
+
+/* Footer — Enregistrer */
+
+#tarteaucitronSave {
+    @apply px-9
+    py-6
+
+    bg-gray
+
+    border-t
+    border-neutral-200;
+}
+
+#tarteaucitronSaveButton {
+    @apply w-full
+    rounded-full
+
+    bg-green-dark
+
+    py-3.5
+
+    text-sm
+    font-semibold
+    text-white
+
+    transition-all
+    duration-300
+    ease-smooth
+
+    hover:bg-black-bis
+
+    active:scale-[0.99];
+}
+
+/* ============================================
+   Bannière de première visite
+   ============================================ */
+
+#tarteaucitronAlertBig {
+    @apply fixed
+    bottom-6
+    left-1/2
+    -translate-x-1/2
+
+    w-[94vw]
+    max-w-3xl
+
+    flex
+    items-center
+    gap-5
+    flex-wrap
+
+    rounded-[24px]
+
+    bg-green-dark
+
+    px-8
+    py-6
+
+    shadow-[0_30px_80px_-15px_rgba(1,14,10,.4)]
+
+    opacity-0
+    translate-y-6
+    animate-[tacSlide_.6s_.1s_var(--ease-smooth)_forwards];
+}
+
+@keyframes tacSlide {
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+#tarteaucitronDisclaimerAlert {
+    @apply mb-4 flex
+    min-w-[220px]
+
+    text-sm
+    leading-relaxed
+    text-white/80;
+}
+
+#tarteaucitronPersonalize2.tarteaucitronCTAButton {
+    @apply ms-4 rounded-full
+    bg-green-bis
+    text-green-dark
+    text-sm
+    font-semibold
+    px-6
+    py-2.5
+
+    transition-all
+    duration-300
+    ease-smooth
+
+    hover:brightness-95
+    hover:scale-[1.02];
+}
+
+#tarteaucitronAllDenied2.tarteaucitronCTAButton {
+    @apply ms-4 rounded-full
+    border
+    border-white/20
+    text-white
+    text-sm
+    font-medium
+    px-6
+    py-2.5
+
+    transition-colors
+    duration-300
+    ease-smooth
+
+    hover:bg-white/10;
+}
+
+#tarteaucitronCloseAlert {
+    @apply ms-4 rounded-full
+    text-white/70
+    text-sm
+    font-medium
+
+    underline
+    underline-offset-4
+    decoration-white/20
+
+    transition-colors
+    duration-300
+    ease-smooth
+
+    hover:text-white
+    hover:decoration-white/50;
+}
+
+#tarteaucitronPrivacyUrl {
+    @apply ms-4 text-xs
+    text-white/50
+
+    underline
+    underline-offset-2
+
+    transition-colors
+    duration-300
+    ease-smooth
+
+    hover:text-white;
+}
+
+/* ============================================
+   Icône flottante (après premier choix)
+   ============================================ */
+
+#tarteaucitronIcon {
+    @apply fixed bottom-0 right-0 m-6;
+}
+
+#tarteaucitronIcon button {
+    @apply flex
+    items-center
+    justify-center
+
+    w-14
+    h-14
+
+    rounded-full
+
+    bg-green-dark
+
+    shadow-[0_15px_40px_-10px_rgba(1,14,10,.5)]
+
+    transition-all
+    duration-300
+    ease-bounce
+
+    hover:scale-110
+    hover:bg-black-bis;
+}
+
+#tarteaucitronIcon button img {
+    @apply w-6
+    h-6
+    opacity-90;
+}

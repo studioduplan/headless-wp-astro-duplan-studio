@@ -1,0 +1,65 @@
+<script is:inline src="/vendor/tarteaucitronjs/tarteaucitron.js"></script>
+
+<script is:inline>
+window.addEventListener("load", () => {  
+  window.tarteaucitron.user.gtagUa = "G-8HR299NFC4";
+  (window.tarteaucitron.job = window.tarteaucitron.job || []).push("gtag");
+  
+  window.tarteaucitron.init({
+    privacyUrl: "/politique-de-confidentialite",
+    orientation: "bottom",
+    highPrivacy: true,
+    AcceptAllCta: true,
+    DenyAllCta: true,
+    googleConsentMode: true,
+    useExternalCss: true
+  });
+
+  // --- Intégration Lenis ---
+
+  // 1. Empêche Lenis d'intercepter le scroll interne de la liste de services
+  function patchTarteaucitronScroll() {
+    const services = document.getElementById("tarteaucitronServices");
+    if (services && !services.hasAttribute("data-lenis-prevent")) {
+      services.setAttribute("data-lenis-prevent", "");
+    }
+  }
+
+  patchTarteaucitronScroll();
+
+  const tacObserver = new MutationObserver(patchTarteaucitronScroll);
+  tacObserver.observe(document.body, { childList: true, subtree: true });
+
+  // 2. Pause/reprise de Lenis via événements custom (découplé de l'implémentation Lenis)
+  function pauseScroll() {
+    document.dispatchEvent(new CustomEvent("lenis:stop"));
+  }
+
+  function resumeScroll() {
+    document.dispatchEvent(new CustomEvent("lenis:start"));
+  }
+
+  document.addEventListener("click", (e) => {
+    // Ouverture de la modale
+    if (
+      e.target.closest("#tarteaucitronCloseAlert") ||
+      e.target.closest("#tarteaucitronManager") ||
+      e.target.closest("#tarteaucitronPersonalize2")
+    ) {
+      pauseScroll();
+    }
+
+    // Fermeture de la modale
+    if (
+      e.target.closest("#tarteaucitronClosePanel") ||
+      e.target.closest("#tarteaucitronBack") ||
+      e.target.closest("#tarteaucitronSaveButton") ||
+      e.target.closest("#tarteaucitronAllAllowed") ||
+      e.target.closest("#tarteaucitronAllDenied") ||
+      e.target.closest("#tarteaucitronAllDenied2")
+    ) {
+      resumeScroll();
+    }
+  });
+});
+</script>
