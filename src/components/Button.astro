@@ -26,11 +26,11 @@ const {
 
 const classes = {
   primary:
-    'relative inline-flex items-center justify-center bg-black rounded-full text-white font-semibold uppercase shadow-[0_6px_12px_rgba(0,0,0,0.25)] transition-colors duration-500 hover:bg-green-dark',
+    'relative inline-flex text-center items-center justify-center bg-black rounded-full text-white font-semibold uppercase shadow-[0_6px_12px_rgba(0,0,0,0.25)] transition-colors duration-500 hover:bg-green-dark',
   secondary:
-    'relative text-[14px] border-t-2 border-green-bis inline-flex gap-x-4 items-center justify-center bg-black rounded-full text-white font-semibold uppercase shadow-[0_6px_12px_rgba(0,0,0,0.25)] transition-colors duration-500 hover:bg-green-dark',
+    'relative text-[14px] text-center border-t-2 border-green-bis inline-flex gap-x-4 items-center justify-center bg-black rounded-full text-white font-semibold uppercase shadow-[0_6px_12px_rgba(0,0,0,0.25)] transition-colors duration-500 hover:bg-green-dark',
   tertiary:
-    'relative text-[14px] border-t-2 border-gray-ter inline-flex gap-x-4 items-center justify-center bg-green-dark rounded-full text-white font-semibold uppercase shadow-[0_6px_12px_rgba(0,0,0,0.25)] transition-colors duration-500 hover:bg-green',
+    'relative text-[14px] text-center border-t-2 border-gray-ter inline-flex gap-x-4 items-center justify-center bg-green-dark rounded-full text-white font-semibold uppercase shadow-[0_6px_12px_rgba(0,0,0,0.25)] transition-colors duration-500 hover:bg-green',
 };
 
 const buttonClass = `
@@ -84,10 +84,13 @@ const buttonClass = `
           // Wrapper vide
           if (!wrapper.textContent?.trim()) return;
 
-          const { chars } = SplitText.create(wrapper, {
-              type: "chars",
-              charsClass: "char",
+          const split = SplitText.create(wrapper, {
+            type: "words,chars",
+            wordsClass: "word",
+            charsClass: "char",
           });
+
+          const chars = split.chars;
 
           // Aucun caractère généré
           if (!chars.length) return;

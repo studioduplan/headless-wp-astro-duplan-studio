@@ -47,3 +47,11 @@ button {
 strong {
     @apply font-semibold;
 }
+
+.word {
+    @apply inline-block whitespace-nowrap;
+}
+
+.char {
+    @apply inline-block;
+}

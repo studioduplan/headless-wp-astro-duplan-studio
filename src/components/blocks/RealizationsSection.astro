@@ -143,7 +143,7 @@ const itemsWithDimensions = await Promise.all(
         <!-- HEADER -->
         <div class="relative z-10 mx-auto max-w-190 text-center">
           {realizations.reinsurance && (
-            <p class="flex items-center justify-center gap-2 text-xl text-gray-ter">
+            <p class="flex flex-col sm:flex-row items-center justify-center gap-2 text-xl text-gray-ter">
               <SvgImage src={Stars} alt="Stars" width="122" height="30" />
               <span>{realizations.reinsurance}</span>
             </p>

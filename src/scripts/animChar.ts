@@ -121,7 +121,8 @@ export async function initAnimChar() {
          */
         targets.forEach((target) => {
             const split = SplitText.create(target, {
-                type: 'chars',
+                type: 'words,chars',
+                wordsClass: 'word',
                 charsClass: 'char'
             });
 
