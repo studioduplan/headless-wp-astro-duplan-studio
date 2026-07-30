@@ -64,7 +64,7 @@ const itemsWithDimensions = await Promise.all(
       {hero.reinsurance && (
         <div
           class="
-            mb-10 inline-flex items-center justify-center
+            mb-5 inline-flex items-center justify-center
             rounded-full border-2 border-black/10
             bg-gray px-5 py-2
             text-sm leading-none
@@ -95,7 +95,7 @@ const itemsWithDimensions = await Promise.all(
             tracking-[-2%]
             leading-normal
             lg:leading-21.25
-            text-black text-2xl sm:text-4xl lg:text-6xl xl:text-[80px]
+            text-black text-[40px] sm:text-4xl lg:text-6xl xl:text-[80px]
             [&_strong]:relative
             [&_strong]:mx-2
             [&_strong]:z-0
@@ -127,7 +127,7 @@ const itemsWithDimensions = await Promise.all(
       {hero.richText && (
         <div
           class="
-            mt-10
+            mt-5
             text-center
             max-w-155
             text-[17px]
@@ -144,7 +144,7 @@ const itemsWithDimensions = await Promise.all(
 
       {/* CTA */}
       {hero.button && (
-        <Button href={calUrl} variant="secondary" targetBlank isIcon class:list={"mt-12"}>
+        <Button href={calUrl} variant="secondary" targetBlank isIcon class:list={"mt-5 sm:mt-12"}>
             {hero.button}
         </Button>
       )}
@@ -153,7 +153,7 @@ const itemsWithDimensions = await Promise.all(
       {hero.richText2 && (
         <div
           class="
-            mt-16
+            mt-5 sm:mt-16
             text-center
             w-full
             max-w-212.5
