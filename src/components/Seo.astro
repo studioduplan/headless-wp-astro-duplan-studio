@@ -8,17 +8,43 @@ interface Props {
 
 const { seo, baseUrl } = Astro.props;
 
-function replaceUrls(url: string): string {
-  // Don't replace image URLs
-  if (url?.match(/\.(jpeg|jpg|gif|png)$/)) {
+function replaceUrls(url: string) {
+  if (!url) return url;
+
+  try {
+    const u = new URL(url);
+    return new URL(u.pathname + u.search + u.hash, baseUrl).toString();
+  } catch {
     return url;
   }
-  return url?.startsWith('http') ? baseUrl : url;
 }
 
 function getImageUrl(image: { sourceUrl?: string } | undefined): string | undefined {
   return image?.sourceUrl ? replaceUrls(image.sourceUrl) : undefined;
 }
+
+function replaceInObject(value: unknown): unknown {
+  if (typeof value === "string") {
+    return value.replace(/^https?:\/\/[^/]+/, baseUrl);
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(replaceInObject);
+  }
+
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([k, v]) => [k, replaceInObject(v)])
+    );
+  }
+
+  return value;
+}
+
+const schema =
+  seo?.schema?.raw
+    ? JSON.stringify(replaceInObject(JSON.parse(seo.schema.raw)))
+    : undefined;
 ---
 
 {seo && (
@@ -64,9 +90,11 @@ function getImageUrl(image: { sourceUrl?: string } | undefined): string | undefi
 
     {seo.cornerstone && <meta name="cornerstone-content" content="true" />}
 
-    {seo.schema && <script type="application/ld+json" set:html={seo.schema.raw} />}
-
-    {/* Include fullHead if it exists and is not empty */}
-    {seo.fullHead && <Fragment set:html={seo.fullHead} />}
+    {schema && (
+  <script
+    type="application/ld+json"
+    set:html={schema}
+  />
+)}
   </>
 )}
