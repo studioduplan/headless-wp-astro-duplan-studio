@@ -7,21 +7,21 @@
 
 /* Overlay */
 #tarteaucitronRoot {
-    @apply font-gsf;
+    @apply relative z-9999 font-gsf;
 }
 
 #tac_title {
-    @apply !hidden;
+    @apply hidden!;
 }
 
 /* Fenêtre principale */
 #tarteaucitron {
     @apply fixed
-    !left-1/2
-    !top-1/2
+    left-1/2!
+    top-1/2!
 
-    !-translate-x-1/2
-    !-translate-y-1/2
+    -translate-x-1/2!
+    -translate-y-1/2!
 
     w-[92vw]
     max-w-2xl
@@ -518,7 +518,7 @@
     gap-5
     flex-wrap
 
-    rounded-[24px]
+    rounded-3xl
 
     bg-green-dark
 
