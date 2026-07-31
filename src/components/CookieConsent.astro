@@ -1,65 +1,631 @@
 <script is:inline src="/vendor/tarteaucitronjs/tarteaucitron.js"></script>
 
 <script is:inline>
-window.addEventListener("load", () => {  
-  window.tarteaucitron.user.gtagUa = "G-8HR299NFC4";
-  (window.tarteaucitron.job = window.tarteaucitron.job || []).push("gtag");
-  
-  window.tarteaucitron.init({
-    privacyUrl: "/politique-de-confidentialite",
-    orientation: "bottom",
-    highPrivacy: true,
-    AcceptAllCta: true,
-    DenyAllCta: true,
-    googleConsentMode: true,
-    useExternalCss: true
-  });
+(() => {
+  "use strict";
 
-  // --- Intégration Lenis ---
+  /* ==========================================================================
+   * GLOBAL STATE
+   * ========================================================================== */
 
-  // 1. Empêche Lenis d'intercepter le scroll interne de la liste de services
-  function patchTarteaucitronScroll() {
-    const services = document.getElementById("tarteaucitronServices");
-    if (services && !services.hasAttribute("data-lenis-prevent")) {
-      services.setAttribute("data-lenis-prevent", "");
+  window.__tarteaucitronAstro =
+    window.__tarteaucitronAstro || {
+      initialized: false,
+      clickHandlerInitialized: false,
+      root: null,
+      observer: null,
+      restoreObserver: null
+    };
+
+  const state = window.__tarteaucitronAstro;
+
+
+  /* ==========================================================================
+   * HELPERS
+   * ========================================================================== */
+
+  function getCookie(name) {
+    const cookies = document.cookie.split(";");
+
+    for (const cookie of cookies) {
+      const [key, ...valueParts] = cookie.trim().split("=");
+
+      if (key === name) {
+        return decodeURIComponent(valueParts.join("="));
+      }
+    }
+
+    return null;
+  }
+
+
+  function getTarteaucitronElements() {
+    return {
+      root: document.getElementById("tarteaucitronRoot"),
+      panel: document.getElementById("tarteaucitron"),
+      icon: document.getElementById("tarteaucitronIcon"),
+      services: document.getElementById("tarteaucitronServices")
+    };
+  }
+
+
+  /* ==========================================================================
+   * TARTEAUCITRON INITIALIZATION
+   * ========================================================================== */
+
+  function initTarteaucitron() {
+    if (state.initialized) {
+      return;
+    }
+
+    if (!window.tarteaucitron) {
+      console.error(
+        "[Tarteaucitron] Librairie introuvable."
+      );
+
+      return;
+    }
+
+
+    window.tarteaucitron.user.gtagUa =
+      "G-8HR299NFC4";
+
+
+    window.tarteaucitron.job =
+      window.tarteaucitron.job || [];
+
+
+    if (
+      !window.tarteaucitron.job.includes("gtag")
+    ) {
+      window.tarteaucitron.job.push("gtag");
+    }
+
+
+    window.tarteaucitron.init({
+      privacyUrl: "/politique-de-confidentialite",
+      orientation: "bottom",
+      highPrivacy: true,
+      AcceptAllCta: true,
+      DenyAllCta: true,
+      googleConsentMode: true,
+      useExternalCss: true
+    });
+
+
+    state.initialized = true;
+
+
+    console.log(
+      "[Tarteaucitron] init()"
+    );
+  }
+
+
+  /* ==========================================================================
+   * SAVE TARTEAUCITRON DOM
+   *
+   * On garde le root original avant qu'Astro ne remplace le body.
+   * ========================================================================== */
+
+  function saveTarteaucitronRoot() {
+    const root =
+      document.getElementById(
+        "tarteaucitronRoot"
+      );
+
+    if (!root) {
+      return;
+    }
+
+    state.root = root;
+
+    console.log(
+      "[Tarteaucitron] Root sauvegardé"
+    );
+  }
+
+
+  /* ==========================================================================
+   * RESTORE TARTEAUCITRON DOM
+   *
+   * Astro vient de remplacer le document.
+   *
+   * On remet le root Tarteaucitron dans le nouveau body.
+   * ========================================================================== */
+
+  function restoreTarteaucitronRoot() {
+    if (!state.root) {
+      return;
+    }
+
+
+    /*
+     * Le root est peut-être déjà présent.
+     */
+    const currentRoot =
+      document.getElementById(
+        "tarteaucitronRoot"
+      );
+
+
+    if (currentRoot) {
+      return;
+    }
+
+
+    /*
+     * On rattache le root original au nouveau body.
+     */
+    document.body.appendChild(
+      state.root
+    );
+
+
+    console.log(
+      "[Tarteaucitron] Root restauré"
+    );
+  }
+
+
+  /* ==========================================================================
+   * DISABLE
+   * ========================================================================== */
+
+  function disableTarteaucitron() {
+    const {
+      root,
+      panel,
+      icon
+    } = getTarteaucitronElements();
+
+
+    if (!root) {
+      return;
+    }
+
+
+    root.style.pointerEvents =
+      "none";
+
+
+    if (panel) {
+      panel.style.display =
+        "none";
+
+      panel.style.opacity =
+        "0";
+    }
+
+
+    /*
+     * L'icône reste cliquable.
+     */
+    if (icon) {
+      icon.style.pointerEvents =
+        "auto";
     }
   }
 
-  patchTarteaucitronScroll();
 
-  const tacObserver = new MutationObserver(patchTarteaucitronScroll);
-  tacObserver.observe(document.body, { childList: true, subtree: true });
+  /* ==========================================================================
+   * ENABLE
+   * ========================================================================== */
 
-  // 2. Pause/reprise de Lenis via événements custom (découplé de l'implémentation Lenis)
-  function pauseScroll() {
-    document.dispatchEvent(new CustomEvent("lenis:stop"));
+  function enableTarteaucitron() {
+    const {
+      root,
+      panel,
+      icon
+    } = getTarteaucitronElements();
+
+
+    if (!root) {
+      return;
+    }
+
+
+    root.style.pointerEvents =
+      "";
+
+
+    if (panel) {
+      panel.style.display =
+        "block";
+
+      panel.style.opacity =
+        1;
+    }
+
+
+    if (icon) {
+      icon.style.pointerEvents =
+        "auto";
+    }
   }
+
+
+  /* ==========================================================================
+   * LENIS
+   * ========================================================================== */
+
+  function pauseScroll() {
+    document.dispatchEvent(
+      new CustomEvent(
+        "lenis:stop"
+      )
+    );
+  }
+
 
   function resumeScroll() {
-    document.dispatchEvent(new CustomEvent("lenis:start"));
+    document.dispatchEvent(
+      new CustomEvent(
+        "lenis:start"
+      )
+    );
   }
 
-  document.addEventListener("click", (e) => {
-    // Ouverture de la modale
+
+  /* ==========================================================================
+   * PATCH TARTEAUCITRON SCROLL
+   * ========================================================================== */
+
+  function patchTarteaucitronScroll() {
+    const {
+      services
+    } = getTarteaucitronElements();
+
+
+    if (!services) {
+      return;
+    }
+
+
     if (
-      e.target.closest("#tarteaucitronCloseAlert") ||
-      e.target.closest("#tarteaucitronManager") ||
-      e.target.closest("#tarteaucitronPersonalize2")
+      !services.hasAttribute(
+        "data-lenis-prevent"
+      )
+    ) {
+      services.setAttribute(
+        "data-lenis-prevent",
+        ""
+      );
+    }
+  }
+
+
+  /* ==========================================================================
+   * RESTORE COOKIE STATE
+   * ========================================================================== */
+
+  function restoreCookieState() {
+    /*
+     * Pas de cookie :
+     *
+     * Ne rien faire.
+     */
+    if (!getCookie("tarteaucitron")) {
+      return;
+    }
+
+
+    const {
+      root
+    } = getTarteaucitronElements();
+
+
+    if (root) {
+      disableTarteaucitron();
+      return;
+    }
+
+
+    /*
+     * Si le root arrive plus tard.
+     */
+    if (state.restoreObserver) {
+      state.restoreObserver.disconnect();
+    }
+
+
+    state.restoreObserver =
+      new MutationObserver(() => {
+
+        const {
+          root
+        } = getTarteaucitronElements();
+
+
+        if (!root) {
+          return;
+        }
+
+
+        state.restoreObserver.disconnect();
+
+        state.restoreObserver =
+          null;
+
+
+        disableTarteaucitron();
+      });
+
+
+    state.restoreObserver.observe(
+      document.body,
+      {
+        childList: true,
+        subtree: true
+      }
+    );
+  }
+
+
+  /* ==========================================================================
+   * DOM OBSERVER
+   * ========================================================================== */
+
+  function setupObserver() {
+    if (state.observer) {
+      state.observer.disconnect();
+    }
+
+
+    state.observer =
+      new MutationObserver(() => {
+        patchTarteaucitronScroll();
+      });
+
+
+    state.observer.observe(
+      document.body,
+      {
+        childList: true,
+        subtree: true
+      }
+    );
+
+
+    patchTarteaucitronScroll();
+  }
+
+
+  /* ==========================================================================
+   * SELECTORS
+   * ========================================================================== */
+
+  const OPEN_SELECTORS = [
+    "#tarteaucitronCloseAlert",
+    "#tarteaucitronManager",
+    "#tarteaucitronPersonalize2"
+  ];
+
+
+  const CLOSE_SELECTORS = [
+    "#tarteaucitronClosePanel",
+    "#tarteaucitronBack",
+    "#tarteaucitronSaveButton"
+  ];
+
+
+  const CONSENT_SELECTORS = [
+    "#tarteaucitronAllAllowed",
+    "#tarteaucitronAllDenied",
+    "#tarteaucitronAllDenied2"
+  ];
+
+
+  function matchesSelector(
+    target,
+    selectors
+  ) {
+    return selectors.some(
+      selector =>
+        target.closest(selector)
+    );
+  }
+
+
+  /* ==========================================================================
+   * CLICK HANDLER
+   * ========================================================================== */
+
+  function handleClick(event) {
+    const target =
+      event.target;
+
+
+    if (
+      !(target instanceof Element)
+    ) {
+      return;
+    }
+
+
+    /* ------------------------------------------------------------------------
+     * ICON
+     * ------------------------------------------------------------------------ */
+
+    if (
+      target.closest(
+        "#tarteaucitronIcon"
+      )
+    ) {
+      enableTarteaucitron();
+
+      pauseScroll();
+
+      return;
+    }
+
+
+    /* ------------------------------------------------------------------------
+     * OPEN
+     * ------------------------------------------------------------------------ */
+
+    if (
+      matchesSelector(
+        target,
+        OPEN_SELECTORS
+      )
     ) {
       pauseScroll();
     }
 
-    // Fermeture de la modale
+
+    /* ------------------------------------------------------------------------
+     * CLOSE
+     * ------------------------------------------------------------------------ */
+
     if (
-      e.target.closest("#tarteaucitronClosePanel") ||
-      e.target.closest("#tarteaucitronBack") ||
-      e.target.closest("#tarteaucitronSaveButton") ||
-      e.target.closest("#tarteaucitronAllAllowed") ||
-      e.target.closest("#tarteaucitronAllDenied") ||
-      e.target.closest("#tarteaucitronAllDenied2")
+      matchesSelector(
+        target,
+        CLOSE_SELECTORS
+      )
     ) {
       resumeScroll();
     }
-  });
-});
+
+
+    /* ------------------------------------------------------------------------
+     * CONSENT
+     * ------------------------------------------------------------------------ */
+
+    if (
+      matchesSelector(
+        target,
+        CONSENT_SELECTORS
+      )
+    ) {
+      setTimeout(() => {
+
+        disableTarteaucitron();
+
+        resumeScroll();
+
+      }, 100);
+    }
+  }
+
+
+  function setupClickHandler() {
+    if (state.clickHandlerInitialized) {
+      return;
+    }
+
+
+    document.addEventListener(
+      "click",
+      handleClick
+    );
+
+
+    state.clickHandlerInitialized =
+      true;
+  }
+
+
+  /* ==========================================================================
+   * ASTRO BEFORE SWAP
+   *
+   * C'est ici que le root Tarteaucitron est sauvegardé AVANT qu'Astro
+   * remplace le DOM.
+   * ========================================================================== */
+
+  document.addEventListener(
+    "astro:before-swap",
+    () => {
+
+      console.log(
+        "[Tarteaucitron] astro:before-swap"
+      );
+
+
+      saveTarteaucitronRoot();
+    }
+  );
+
+
+  /* ==========================================================================
+   * ASTRO AFTER SWAP
+   *
+   * Le nouveau DOM est maintenant en place.
+   * On remet Tarteaucitron dedans.
+   * ========================================================================== */
+
+  document.addEventListener(
+    "astro:after-swap",
+    () => {
+
+      console.log(
+        "[Tarteaucitron] astro:after-swap"
+      );
+
+
+      restoreTarteaucitronRoot();
+    }
+  );
+
+
+  /* ==========================================================================
+   * ASTRO PAGE LOAD
+   * ========================================================================== */
+
+  document.addEventListener(
+    "astro:page-load",
+    () => {
+
+      console.log(
+        "[Tarteaucitron] astro:page-load"
+      );
+
+
+      /*
+       * Initialisation uniquement au premier chargement.
+       */
+      initTarteaucitron();
+
+
+      /*
+       * S'assure que le root est présent.
+       */
+      restoreTarteaucitronRoot();
+
+
+      /*
+       * Rebranche nos comportements sur le DOM courant.
+       */
+      setupObserver();
+
+
+      setupClickHandler();
+
+
+      /*
+       * Réapplique le cookie.
+       */
+      restoreCookieState();
+
+
+      /*
+       * Patch immédiat.
+       */
+      patchTarteaucitronScroll();
+    }
+  );
+
+
+  /* ==========================================================================
+   * INITIAL LOAD
+   * ========================================================================== */
+
+  if (
+    document.readyState !==
+    "loading"
+  ) {
+    initTarteaucitron();
+  }
+
+})();
 </script>
