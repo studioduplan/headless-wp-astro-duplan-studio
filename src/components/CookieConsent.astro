@@ -1,5 +1,3 @@
-<script is:inline src="/vendor/tarteaucitronjs/tarteaucitron.js"></script>
-
 <script is:inline>
 (() => {
   "use strict";
@@ -47,6 +45,40 @@
       services: document.getElementById("tarteaucitronServices")
     };
   }
+
+  /* ==========================================================================
+ * LOAD TARTEAUCITRON (DELAY)
+ * ========================================================================== */
+
+function loadTarteaucitron() {
+  if (window.tarteaucitron) {
+    initTarteaucitron();
+    return;
+  }
+
+  const script = document.createElement("script");
+
+  script.src = "/vendor/tarteaucitronjs/tarteaucitron.js";
+  script.async = true;
+
+  script.onload = () => {
+    initTarteaucitron();
+
+    restoreTarteaucitronRoot();
+    setupObserver();
+    setupClickHandler();
+    restoreCookieState();
+    patchTarteaucitronScroll();
+  };
+
+  document.head.appendChild(script);
+}
+
+function startTarteaucitron() {
+  setTimeout(() => {
+    loadTarteaucitron();
+  }, 3000);
+}
 
 
   /* ==========================================================================
@@ -569,63 +601,66 @@
 
 
   /* ==========================================================================
-   * ASTRO PAGE LOAD
-   * ========================================================================== */
+ * ASTRO PAGE LOAD
+ * ========================================================================== */
 
-  document.addEventListener(
-    "astro:page-load",
-    () => {
+document.addEventListener(
+  "astro:page-load",
+  () => {
 
-      console.log(
-        "[Tarteaucitron] astro:page-load"
-      );
+    console.log(
+      "[Tarteaucitron] astro:page-load"
+    );
 
-
-      /*
-       * Initialisation uniquement au premier chargement.
-       */
-      initTarteaucitron();
-
-
-      /*
-       * S'assure que le root est présent.
-       */
-      restoreTarteaucitronRoot();
-
-
-      /*
-       * Rebranche nos comportements sur le DOM courant.
-       */
-      setupObserver();
-
-
-      setupClickHandler();
-
-
-      /*
-       * Réapplique le cookie.
-       */
-      restoreCookieState();
-
-
-      /*
-       * Patch immédiat.
-       */
-      patchTarteaucitronScroll();
+    /*
+     * Le script n'est peut-être pas encore chargé
+     * (premières 3 secondes).
+     */
+    if (!window.tarteaucitron) {
+      return;
     }
-  );
+
+    /*
+     * Sécurisé : init() ne s'exécute qu'une seule fois.
+     */
+    initTarteaucitron();
+
+    /*
+     * Réattache le root après les View Transitions.
+     */
+    restoreTarteaucitronRoot();
+
+    /*
+     * Rebranche tous les comportements.
+     */
+    setupObserver();
+
+    setupClickHandler();
+
+    /*
+     * Réapplique l'état du cookie.
+     */
+    restoreCookieState();
+
+    /*
+     * Patch immédiat.
+     */
+    patchTarteaucitronScroll();
+  }
+);
 
 
   /* ==========================================================================
-   * INITIAL LOAD
-   * ========================================================================== */
+ * INITIAL LOAD
+ * ========================================================================== */
 
-  if (
-    document.readyState !==
-    "loading"
-  ) {
-    initTarteaucitron();
-  }
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => {
+    startTarteaucitron();
+  });
+} else {
+  startTarteaucitron();
+}
 
 })();
 </script>
